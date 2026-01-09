@@ -783,49 +783,107 @@ app.get('/', (c) => {
 
         <!-- Hero Section -->
         <section class="gradient-bg min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+            <!-- Animated circles background -->
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -top-20 -left-20 animate-pulse"></div>
+                <div class="absolute w-96 h-96 bg-pink-500/20 rounded-full blur-3xl -bottom-20 -right-20 animate-pulse" style="animation-delay: 1s"></div>
+                <div class="absolute w-64 h-64 bg-blue-500/20 rounded-full blur-3xl top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" style="animation-delay: 2s"></div>
+            </div>
+
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="text-center">
                     <div class="fade-in mb-8">
-                        <span class="inline-block bg-white/20 backdrop-blur-md text-white px-6 py-2 rounded-full text-sm font-semibold border border-white/30 shadow-lg">
-                            🎉 AI 기반 스마트 의료 플랫폼
+                        <span class="inline-block bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-full text-base font-bold border border-white/30 shadow-lg hover:scale-105 transition-transform">
+                            🎉 AI 기반 스마트 의료 플랫폼 · 3,000개 병원 제휴
                         </span>
                     </div>
-                    <h1 class="text-6xl md:text-7xl font-black text-white mb-6 fade-in-delay-1 neon-text">
+                    <h1 class="text-6xl md:text-8xl font-black text-white mb-8 fade-in-delay-1 neon-text leading-tight">
                         AI가 도와주는<br>
                         <span class="bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent">
                             스마트 병원 예약
                         </span>
                     </h1>
-                    <p class="text-xl md:text-2xl mb-12 text-white/90 max-w-3xl mx-auto fade-in-delay-2">
+                    <p class="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto fade-in-delay-2 leading-relaxed">
                         음성과 채팅으로 간편하게 예약하고,<br class="hidden md:block"> 
                         의료 기록을 체계적으로 관리하세요
                     </p>
-                    <div class="flex flex-col sm:flex-row justify-center gap-6 fade-in-delay-3">
-                        <a href="#dashboard" class="group btn-primary text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-purple-500/50 transition-all">
+                    
+                    <!-- Trust indicators -->
+                    <div class="flex flex-wrap justify-center gap-6 mb-12 fade-in-delay-2">
+                        <div class="flex items-center gap-2 text-white/90">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span class="font-semibold">24/7 AI 상담</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-white/90">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span class="font-semibold">실시간 예약</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-white/90">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span class="font-semibold">무료 사용</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-white/90">
+                            <i class="fas fa-check-circle text-green-300"></i>
+                            <span class="font-semibold">안전한 보안</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-center gap-6 mb-16 fade-in-delay-3">
+                        <a href="/register" class="group btn-primary text-white px-12 py-5 rounded-2xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105">
                             <i class="fas fa-rocket mr-2 group-hover:rotate-12 transition-transform"></i>
                             지금 무료로 시작하기
                         </a>
-                        <a href="#features" class="glass-card-dark text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-white/20 transition-all">
+                        <a href="#features" class="glass-card-dark text-white px-12 py-5 rounded-2xl font-bold text-xl hover:bg-white/20 transition-all hover:scale-105">
                             <i class="fas fa-play-circle mr-2"></i>
                             데모 보기
                         </a>
                     </div>
+
+                    <!-- Quick Stats in Hero -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16 fade-in-delay-3">
+                        <div class="glass-card-dark p-6 rounded-2xl hover:scale-105 transition-transform">
+                            <div class="text-4xl md:text-5xl font-black text-white mb-2">50K+</div>
+                            <div class="text-white/80 font-semibold">누적 예약</div>
+                        </div>
+                        <div class="glass-card-dark p-6 rounded-2xl hover:scale-105 transition-transform">
+                            <div class="text-4xl md:text-5xl font-black text-white mb-2">3K+</div>
+                            <div class="text-white/80 font-semibold">제휴 병원</div>
+                        </div>
+                        <div class="glass-card-dark p-6 rounded-2xl hover:scale-105 transition-transform">
+                            <div class="text-4xl md:text-5xl font-black text-white mb-2">98%</div>
+                            <div class="text-white/80 font-semibold">만족도</div>
+                        </div>
+                        <div class="glass-card-dark p-6 rounded-2xl hover:scale-105 transition-transform">
+                            <div class="text-4xl md:text-5xl font-black text-white mb-2">24/7</div>
+                            <div class="text-white/80 font-semibold">AI 지원</div>
+                        </div>
+                    </div>
                     
-                    <!-- Floating Icons -->
-                    <div class="mt-20 relative h-64">
-                        <div class="absolute top-0 left-1/4 float-animation">
-                            <div class="glass-card p-6 rounded-2xl shadow-xl">
-                                <i class="fas fa-hospital text-4xl text-purple-600"></i>
+                    <!-- Floating Icons - Enhanced -->
+                    <div class="relative h-80">
+                        <div class="absolute top-0 left-[10%] md:left-[15%] float-animation">
+                            <div class="glass-card p-8 rounded-3xl shadow-2xl hover:scale-110 transition-transform">
+                                <i class="fas fa-hospital text-5xl text-purple-600"></i>
                             </div>
                         </div>
-                        <div class="absolute top-10 right-1/4 float-animation" style="animation-delay: 0.5s">
-                            <div class="glass-card p-6 rounded-2xl shadow-xl">
-                                <i class="fas fa-user-md text-4xl text-pink-600"></i>
+                        <div class="absolute top-10 right-[10%] md:right-[15%] float-animation" style="animation-delay: 0.5s">
+                            <div class="glass-card p-8 rounded-3xl shadow-2xl hover:scale-110 transition-transform">
+                                <i class="fas fa-user-md text-5xl text-pink-600"></i>
                             </div>
                         </div>
-                        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 float-animation" style="animation-delay: 1s">
-                            <div class="glass-card p-6 rounded-2xl shadow-xl">
-                                <i class="fas fa-robot text-4xl text-indigo-600"></i>
+                        <div class="absolute bottom-10 left-[25%] float-animation" style="animation-delay: 1s">
+                            <div class="glass-card p-8 rounded-3xl shadow-2xl hover:scale-110 transition-transform">
+                                <i class="fas fa-calendar-check text-5xl text-blue-600"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-10 right-[25%] float-animation" style="animation-delay: 1.5s">
+                            <div class="glass-card p-8 rounded-3xl shadow-2xl hover:scale-110 transition-transform">
+                                <i class="fas fa-file-medical text-5xl text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 float-animation" style="animation-delay: 2s">
+                            <div class="glass-card p-10 rounded-3xl shadow-2xl hover:scale-110 transition-transform glow">
+                                <i class="fas fa-robot text-6xl text-indigo-600"></i>
                             </div>
                         </div>
                     </div>
@@ -943,36 +1001,6 @@ app.get('/', (c) => {
                                 <span class="text-gray-700">약물 상호작용 안내</span>
                             </li>
                         </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Statistics Section -->
-        <section class="py-20 relative">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="glass-card rounded-3xl p-12 border-gradient">
-                    <div class="text-center mb-12">
-                        <h2 class="text-4xl font-black gradient-text mb-4">믿을 수 있는 숫자</h2>
-                        <p class="text-gray-600 text-lg">메디케어 AI가 만들어가는 성과</p>
-                    </div>
-                    <div class="grid md:grid-cols-4 gap-8">
-                        <div class="text-center">
-                            <div class="text-5xl font-black gradient-text mb-2">50,000+</div>
-                            <p class="text-gray-600 font-semibold">누적 예약 건수</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-5xl font-black gradient-text mb-2">3,000+</div>
-                            <p class="text-gray-600 font-semibold">등록 병원</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-5xl font-black gradient-text mb-2">98%</div>
-                            <p class="text-gray-600 font-semibold">고객 만족도</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-5xl font-black gradient-text mb-2">24/7</div>
-                            <p class="text-gray-600 font-semibold">AI 상담 가능</p>
-                        </div>
                     </div>
                 </div>
             </div>
