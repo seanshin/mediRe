@@ -274,6 +274,230 @@ app.get('/api/chat/sessions/:sessionId/messages', async (c) => {
   return c.json({ success: true, data: result.results })
 })
 
+// ==================== Insurance API Routes ====================
+
+// Get user insurance policies
+app.get('/api/users/:userId/insurance/policies', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  const status = c.req.query('status')
+  
+  let query = 'SELECT * FROM insurance_policies WHERE user_id = ?'
+  let params: any[] = [userId]
+  
+  if (status) {
+    query += ' AND status = ?'
+    params.push(status)
+  }
+  
+  query += ' ORDER BY created_at DESC'
+  
+  const result = await DB.prepare(query).bind(...params).all()
+  return c.json({ success: true, data: result.results })
+})
+
+// Create insurance policy
+app.post('/api/insurance/policies', async (c) => {
+  const { DB } = c.env
+  const body = await c.req.json()
+  
+  const result = await DB.prepare(`
+    INSERT INTO insurance_policies (user_id, insurance_company, policy_number, policy_type, policy_name, coverage_amount, premium_amount, start_date, end_date, status, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    body.user_id,
+    body.insurance_company,
+    body.policy_number,
+    body.policy_type,
+    body.policy_name,
+    body.coverage_amount || null,
+    body.premium_amount || null,
+    body.start_date,
+    body.end_date || null,
+    body.status || 'active',
+    body.notes || null
+  ).run()
+  
+  return c.json({ success: true, data: { id: result.meta.last_row_id } })
+})
+
+// Get user insurance claims
+app.get('/api/users/:userId/insurance/claims', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  const status = c.req.query('status')
+  
+  let query = `
+    SELECT ic.*, ip.policy_name, ip.insurance_company
+    FROM insurance_claims ic
+    JOIN insurance_policies ip ON ic.policy_id = ip.id
+    WHERE ic.user_id = ?
+  `
+  let params: any[] = [userId]
+  
+  if (status) {
+    query += ' AND ic.status = ?'
+    params.push(status)
+  }
+  
+  query += ' ORDER BY ic.created_at DESC'
+  
+  const result = await DB.prepare(query).bind(...params).all()
+  return c.json({ success: true, data: result.results })
+})
+
+// Create insurance claim
+app.post('/api/insurance/claims', async (c) => {
+  const { DB } = c.env
+  const body = await c.req.json()
+  
+  // Generate claim number
+  const claimNumber = `CLM${Date.now()}`
+  
+  const result = await DB.prepare(`
+    INSERT INTO insurance_claims (
+      user_id, policy_id, medical_record_id, claim_number, claim_date, 
+      treatment_date, hospital_name, diagnosis, treatment_type, 
+      total_amount, claimed_amount, status, notes
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    body.user_id,
+    body.policy_id,
+    body.medical_record_id || null,
+    claimNumber,
+    new Date().toISOString().split('T')[0],
+    body.treatment_date,
+    body.hospital_name,
+    body.diagnosis,
+    body.treatment_type,
+    body.total_amount,
+    body.claimed_amount,
+    'pending',
+    body.notes || null
+  ).run()
+  
+  return c.json({ success: true, data: { id: result.meta.last_row_id, claim_number: claimNumber } })
+})
+
+// Update insurance claim status
+app.put('/api/insurance/claims/:id', async (c) => {
+  const { DB } = c.env
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  
+  const updates: string[] = []
+  const params: any[] = []
+  
+  if (body.status) {
+    updates.push('status = ?')
+    params.push(body.status)
+    
+    if (body.status === 'submitted' && !body.submission_date) {
+      updates.push('submission_date = ?')
+      params.push(new Date().toISOString().split('T')[0])
+    }
+    if (body.status === 'approved') {
+      updates.push('approval_date = ?')
+      params.push(new Date().toISOString().split('T')[0])
+      if (body.approved_amount) {
+        updates.push('approved_amount = ?')
+        params.push(body.approved_amount)
+      }
+    }
+    if (body.status === 'paid') {
+      updates.push('payment_date = ?')
+      params.push(new Date().toISOString().split('T')[0])
+      if (body.paid_amount) {
+        updates.push('paid_amount = ?')
+        params.push(body.paid_amount)
+      }
+    }
+    if (body.status === 'rejected' && body.rejection_reason) {
+      updates.push('rejection_reason = ?')
+      params.push(body.rejection_reason)
+    }
+  }
+  
+  updates.push('updated_at = CURRENT_TIMESTAMP')
+  params.push(id)
+  
+  await DB.prepare(`UPDATE insurance_claims SET ${updates.join(', ')} WHERE id = ?`).bind(...params).run()
+  
+  return c.json({ success: true })
+})
+
+// Get user medical receipts
+app.get('/api/users/:userId/insurance/receipts', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  
+  const result = await DB.prepare(`
+    SELECT * FROM medical_receipts WHERE user_id = ? ORDER BY receipt_date DESC
+  `).bind(userId).all()
+  
+  return c.json({ success: true, data: result.results })
+})
+
+// Create medical receipt
+app.post('/api/insurance/receipts', async (c) => {
+  const { DB } = c.env
+  const body = await c.req.json()
+  
+  const result = await DB.prepare(`
+    INSERT INTO medical_receipts (
+      user_id, medical_record_id, claim_id, receipt_number, receipt_date,
+      hospital_name, treatment_type, amount, payment_method, receipt_image_url,
+      is_claimed, notes
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    body.user_id,
+    body.medical_record_id || null,
+    body.claim_id || null,
+    body.receipt_number,
+    body.receipt_date,
+    body.hospital_name,
+    body.treatment_type,
+    body.amount,
+    body.payment_method || 'card',
+    body.receipt_image_url || null,
+    body.is_claimed || 0,
+    body.notes || null
+  ).run()
+  
+  return c.json({ success: true, data: { id: result.meta.last_row_id } })
+})
+
+// Get insurance statistics
+app.get('/api/users/:userId/insurance/statistics', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  
+  // Get total policies
+  const policies = await DB.prepare('SELECT COUNT(*) as count FROM insurance_policies WHERE user_id = ? AND status = ?').bind(userId, 'active').first()
+  
+  // Get total claims
+  const claims = await DB.prepare('SELECT COUNT(*) as count, SUM(claimed_amount) as total FROM insurance_claims WHERE user_id = ?').bind(userId).first()
+  
+  // Get paid claims
+  const paidClaims = await DB.prepare('SELECT COUNT(*) as count, SUM(paid_amount) as total FROM insurance_claims WHERE user_id = ? AND status = ?').bind(userId, 'paid').first()
+  
+  // Get pending claims
+  const pendingClaims = await DB.prepare('SELECT COUNT(*) as count FROM insurance_claims WHERE user_id = ? AND status IN (?, ?, ?)').bind(userId, 'pending', 'submitted', 'under_review').first()
+  
+  return c.json({
+    success: true,
+    data: {
+      active_policies: policies?.count || 0,
+      total_claims: claims?.count || 0,
+      total_claimed: claims?.total || 0,
+      total_paid: paidClaims?.total || 0,
+      pending_claims: pendingClaims?.count || 0
+    }
+  })
+})
+
 // Get user info
 app.get('/api/users/:id', async (c) => {
   const { DB } = c.env
