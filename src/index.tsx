@@ -740,6 +740,646 @@ app.get('/login', (c) => {
   `)
 })
 
+// Service Concept page
+app.get('/concept', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>서비스 컨셉 - WeRuby AI</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+        <style>
+          .diagram-box {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+          }
+          .diagram-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+          }
+          .arrow-right {
+            position: relative;
+          }
+          .arrow-right::after {
+            content: '→';
+            font-size: 32px;
+            color: #9333ea;
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+          }
+          .arrow-down {
+            position: relative;
+          }
+          .arrow-down::after {
+            content: '↓';
+            font-size: 32px;
+            color: #9333ea;
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          .flow-step {
+            counter-increment: step;
+          }
+          .flow-step::before {
+            content: counter(step);
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #9333ea, #ec4899);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);
+          }
+          .service-flow {
+            counter-reset: step;
+          }
+        </style>
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="glass-card fixed w-full top-0 z-50 border-b border-white/20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-xl shadow-lg">
+                            <i class="fas fa-heartbeat text-white text-2xl"></i>
+                        </div>
+                        <span class="font-black text-2xl gradient-text">WeRuby AI</span>
+                    </div>
+                    <div class="hidden md:flex space-x-6 items-center">
+                        <a href="/" class="text-gray-700 hover:text-purple-600 font-semibold transition">홈</a>
+                        <a href="/concept" class="text-purple-600 font-bold border-b-2 border-purple-600">서비스 컨셉</a>
+                        <a href="/login" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
+                            <i class="fas fa-sign-in-alt mr-2"></i>로그인
+                        </a>
+                        <a href="/register" class="btn-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg glow">
+                            <i class="fas fa-user-plus mr-2"></i>회원가입
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="gradient-bg pt-32 pb-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="mb-6">
+                    <span class="inline-block bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-full text-sm font-bold border border-white/30 shadow-lg">
+                        💡 서비스 컨셉
+                    </span>
+                </div>
+                <h1 class="text-5xl md:text-7xl font-black text-white mb-6 neon-text">
+                    일정 기반<br>
+                    <span class="bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 bg-clip-text text-transparent">
+                        통합 의료 서비스
+                    </span>
+                </h1>
+                <p class="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed">
+                    채팅으로 시작해서 예약, 진료, 보험청구까지<br>
+                    모든 의료 여정을 하나의 플랫폼에서 완성합니다
+                </p>
+            </div>
+        </section>
+
+        <!-- Core Concept Section -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black gradient-text mb-4">
+                        WeRuby AI 핵심 컨셉
+                    </h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        사용자의 일정을 중심으로 모든 의료 서비스가 자동으로 연결되고 처리됩니다
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 mb-16">
+                    <!-- Concept 1 -->
+                    <div class="glass-card p-8 rounded-3xl text-center card-hover">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-calendar-check text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">일정 중심</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            사용자의 캘린더를 기반으로 최적의 예약 시간을 자동으로 제안하고 관리합니다
+                        </p>
+                    </div>
+
+                    <!-- Concept 2 -->
+                    <div class="glass-card p-8 rounded-3xl text-center card-hover">
+                        <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-comments text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">대화형 인터페이스</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            복잡한 양식 없이 AI와 자연스러운 대화만으로 모든 절차를 완료합니다
+                        </p>
+                    </div>
+
+                    <!-- Concept 3 -->
+                    <div class="glass-card p-8 rounded-3xl text-center card-hover">
+                        <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-link text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">완전 통합</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            예약부터 진료, 보험청구까지 모든 과정이 끊김없이 연결됩니다
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Flow Diagram -->
+        <section class="py-20 bg-gradient-to-br from-purple-50 to-pink-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black gradient-text mb-4">
+                        서비스 흐름도
+                    </h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        사용자의 단 한 번의 요청으로 시작되는 완벽한 의료 서비스 여정
+                    </p>
+                </div>
+
+                <!-- Flow Diagram -->
+                <div class="service-flow space-y-12">
+                    <!-- Step 1: User Input -->
+                    <div class="max-w-4xl mx-auto">
+                        <div class="diagram-box flow-step arrow-down">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-user text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">사용자 요청</h3>
+                                    <p class="text-gray-700 mb-4 text-lg">
+                                        "다음주 화요일 오전에 내과 예약해줘"
+                                    </p>
+                                    <div class="bg-blue-50 rounded-xl p-4">
+                                        <ul class="space-y-2 text-gray-700">
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check text-blue-600 mt-1 mr-3"></i>
+                                                <span>채팅 또는 음성으로 간단히 요청</span>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check text-blue-600 mt-1 mr-3"></i>
+                                                <span>증상, 희망 시간, 위치 등 자연어로 입력</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: AI Analysis -->
+                    <div class="max-w-4xl mx-auto">
+                        <div class="diagram-box flow-step arrow-down">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-brain text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">AI 분석 및 처리</h3>
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div class="bg-purple-50 rounded-xl p-4">
+                                            <h4 class="font-bold text-gray-900 mb-2 flex items-center">
+                                                <i class="fas fa-calendar text-purple-600 mr-2"></i>
+                                                일정 분석
+                                            </h4>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• 사용자 캘린더 확인</li>
+                                                <li>• 가능한 시간대 추출</li>
+                                                <li>• 이동 시간 계산</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-pink-50 rounded-xl p-4">
+                                            <h4 class="font-bold text-gray-900 mb-2 flex items-center">
+                                                <i class="fas fa-stethoscope text-pink-600 mr-2"></i>
+                                                의료 정보 분석
+                                            </h4>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• 증상 기반 진료과 추천</li>
+                                                <li>• 과거 진료 기록 참조</li>
+                                                <li>• 최적 병원/의사 매칭</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Smart Recommendation -->
+                    <div class="max-w-4xl mx-auto">
+                        <div class="diagram-box flow-step arrow-down">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-lightbulb text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">맞춤형 추천</h3>
+                                    <div class="bg-green-50 rounded-xl p-4 mb-4">
+                                        <p class="text-gray-700 mb-3">
+                                            <strong>AI 추천:</strong> "화요일 오전 10시, 서울대병원 김민수 내과 전문의를 추천합니다"
+                                        </p>
+                                        <div class="grid grid-cols-3 gap-3 text-sm">
+                                            <div class="bg-white rounded-lg p-3 text-center">
+                                                <i class="fas fa-star text-yellow-500 mb-1"></i>
+                                                <p class="font-bold">평점 4.9</p>
+                                            </div>
+                                            <div class="bg-white rounded-lg p-3 text-center">
+                                                <i class="fas fa-car text-blue-500 mb-1"></i>
+                                                <p class="font-bold">15분 거리</p>
+                                            </div>
+                                            <div class="bg-white rounded-lg p-3 text-center">
+                                                <i class="fas fa-clock text-purple-500 mb-1"></i>
+                                                <p class="font-bold">대기 5분</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Automatic Booking -->
+                    <div class="max-w-4xl mx-auto">
+                        <div class="diagram-box flow-step arrow-down">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-check-circle text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">자동 예약 및 일정 등록</h3>
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div class="bg-orange-50 rounded-xl p-4">
+                                            <h4 class="font-bold text-gray-900 mb-2">예약 완료</h4>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>✓ 병원 예약 시스템 연동</li>
+                                                <li>✓ 예약 확정 및 예약번호 발급</li>
+                                                <li>✓ 확인 문자/알림 발송</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-red-50 rounded-xl p-4">
+                                            <h4 class="font-bold text-gray-900 mb-2">캘린더 통합</h4>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>✓ 사용자 캘린더에 자동 등록</li>
+                                                <li>✓ 진료 전 리마인더 설정</li>
+                                                <li>✓ 이동 시간 알림</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Pre-Visit Preparation -->
+                    <div class="max-w-4xl mx-auto">
+                        <div class="diagram-box flow-step arrow-down">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-clipboard-list text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">진료 전 준비</h3>
+                                    <div class="bg-indigo-50 rounded-xl p-4">
+                                        <ul class="space-y-2 text-gray-700">
+                                            <li class="flex items-start">
+                                                <i class="fas fa-file-medical text-indigo-600 mt-1 mr-3"></i>
+                                                <span>과거 진료 기록 자동 전송</span>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-clipboard-check text-indigo-600 mt-1 mr-3"></i>
+                                                <span>문진표 AI 작성 (증상 기반)</span>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-pills text-indigo-600 mt-1 mr-3"></i>
+                                                <span>현재 복용 중인 약 정보 공유</span>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-bell text-indigo-600 mt-1 mr-3"></i>
+                                                <span>진료 1시간 전 출발 알림</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Medical Visit -->
+                    <div class="max-w-4xl mx-auto">
+                        <div class="diagram-box flow-step arrow-down">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-hospital text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">진료 진행</h3>
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div class="bg-teal-50 rounded-xl p-4">
+                                            <h4 class="font-bold text-gray-900 mb-2">실시간 업데이트</h4>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• 대기 순서 실시간 알림</li>
+                                                <li>• 예상 대기 시간 안내</li>
+                                                <li>• QR 체크인으로 빠른 접수</li>
+                                            </ul>
+                                        </div>
+                                        <div class="bg-cyan-50 rounded-xl p-4">
+                                            <h4 class="font-bold text-gray-900 mb-2">진료 기록</h4>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• 진단 내용 자동 저장</li>
+                                                <li>• 처방전 디지털화</li>
+                                                <li>• 검사 결과 연동</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 7: Post-Visit Processing -->
+                    <div class="max-w-4xl mx-auto">
+                        <div class="diagram-box flow-step arrow-down">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-file-invoice-dollar text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">진료 후 처리</h3>
+                                    <div class="bg-pink-50 rounded-xl p-4 mb-4">
+                                        <h4 class="font-bold text-gray-900 mb-3">자동 처리 항목</h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-start bg-white rounded-lg p-3">
+                                                <i class="fas fa-prescription text-pink-600 mt-1 mr-3"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">처방전 관리</p>
+                                                    <p class="text-sm text-gray-600">약국 전송, 복약 알림 설정</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start bg-white rounded-lg p-3">
+                                                <i class="fas fa-credit-card text-pink-600 mt-1 mr-3"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">간편 결제</p>
+                                                    <p class="text-sm text-gray-600">앱 내 결제 또는 모바일 간편결제</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start bg-white rounded-lg p-3">
+                                                <i class="fas fa-shield-alt text-pink-600 mt-1 mr-3"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">보험 청구</p>
+                                                    <p class="text-sm text-gray-600">보험사 자동 청구 및 환급 처리</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 8: Insurance Processing -->
+                    <div class="max-w-4xl mx-auto">
+                        <div class="diagram-box flow-step">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-file-contract text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">보험 자동 처리</h3>
+                                    <div class="bg-emerald-50 rounded-xl p-4">
+                                        <div class="grid md:grid-cols-3 gap-4 mb-4">
+                                            <div class="bg-white rounded-lg p-4 text-center">
+                                                <i class="fas fa-file-upload text-emerald-600 text-2xl mb-2"></i>
+                                                <p class="font-bold text-gray-900 mb-1">1. 자동 제출</p>
+                                                <p class="text-xs text-gray-600">진료 기록 → 보험사</p>
+                                            </div>
+                                            <div class="bg-white rounded-lg p-4 text-center">
+                                                <i class="fas fa-search-dollar text-emerald-600 text-2xl mb-2"></i>
+                                                <p class="font-bold text-gray-900 mb-1">2. 심사 진행</p>
+                                                <p class="text-xs text-gray-600">실시간 진행상황</p>
+                                            </div>
+                                            <div class="bg-white rounded-lg p-4 text-center">
+                                                <i class="fas fa-money-check-alt text-emerald-600 text-2xl mb-2"></i>
+                                                <p class="font-bold text-gray-900 mb-1">3. 환급 완료</p>
+                                                <p class="text-xs text-gray-600">계좌로 자동 입금</p>
+                                            </div>
+                                        </div>
+                                        <div class="bg-white rounded-lg p-3">
+                                            <p class="text-sm text-gray-700">
+                                                <i class="fas fa-info-circle text-emerald-600 mr-2"></i>
+                                                <strong>평균 처리 시간:</strong> 3-5 영업일 (기존 2-3주 대비 획기적 단축)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Box -->
+                <div class="max-w-4xl mx-auto mt-16">
+                    <div class="glass-card p-8 rounded-3xl border-gradient">
+                        <h3 class="text-3xl font-black gradient-text mb-6 text-center">
+                            <i class="fas fa-magic mr-3"></i>
+                            모든 과정이 자동으로
+                        </h3>
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <div class="text-center">
+                                <div class="text-4xl font-black text-purple-600 mb-2">1회</div>
+                                <p class="text-gray-700">사용자 요청</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-4xl font-black text-pink-600 mb-2">8단계</div>
+                                <p class="text-gray-700">자동 처리</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-4xl font-black text-blue-600 mb-2">0회</div>
+                                <p class="text-gray-700">추가 입력</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Benefits -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black gradient-text mb-4">
+                        왜 WeRuby AI인가?
+                    </h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        기존 의료 서비스와 완전히 다른 경험을 제공합니다
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Before -->
+                    <div class="glass-card p-8 rounded-3xl border-2 border-red-200">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-times text-red-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900">기존 방식</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-minus-circle text-red-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">병원 전화로 예약 (대기 시간 10-30분)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-minus-circle text-red-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">수기로 문진표 작성</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-minus-circle text-red-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">진료 기록 종이로 보관</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-minus-circle text-red-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">처방전 약국 직접 제출</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-minus-circle text-red-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">보험 청구 별도 서류 작성 (2-3주 소요)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-minus-circle text-red-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">일정 관리 직접 수동 입력</span>
+                            </li>
+                        </ul>
+                        <div class="mt-6 bg-red-50 rounded-xl p-4 text-center">
+                            <p class="text-2xl font-black text-red-600 mb-1">평균 소요 시간</p>
+                            <p class="text-4xl font-black text-red-700">2-3시간</p>
+                        </div>
+                    </div>
+
+                    <!-- After -->
+                    <div class="glass-card p-8 rounded-3xl border-2 border-green-200">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-check text-green-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900">WeRuby AI</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">채팅으로 즉시 예약 (5초)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">AI가 자동으로 문진표 작성</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">진료 기록 자동 저장 및 관리</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">처방전 약국 자동 전송</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">보험 자동 청구 (3-5일 완료)</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check-circle text-green-500 mt-1 mr-3"></i>
+                                <span class="text-gray-700">캘린더 자동 등록 및 알림</span>
+                            </li>
+                        </ul>
+                        <div class="mt-6 bg-green-50 rounded-xl p-4 text-center">
+                            <p class="text-2xl font-black text-green-600 mb-1">평균 소요 시간</p>
+                            <p class="text-4xl font-black text-green-700">3-5분</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-20 gradient-bg">
+            <div class="max-w-4xl mx-auto text-center px-4">
+                <h2 class="text-4xl md:text-5xl font-black text-white mb-6">
+                    지금 바로 경험해보세요
+                </h2>
+                <p class="text-xl text-white/90 mb-8">
+                    단 한 번의 대화로 시작되는 완벽한 의료 서비스 여정
+                </p>
+                <a href="/register" class="inline-block btn-primary text-white px-12 py-5 rounded-2xl font-bold text-xl shadow-2xl hover:scale-105 transition-transform glow">
+                    <i class="fas fa-rocket mr-3"></i>
+                    무료로 시작하기
+                    <i class="fas fa-arrow-right ml-3"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="flex items-center justify-center space-x-3 mb-4">
+                    <div class="bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-xl">
+                        <i class="fas fa-heartbeat text-white text-2xl"></i>
+                    </div>
+                    <span class="font-black text-2xl">WeRuby AI</span>
+                </div>
+                <p class="text-gray-400 mb-4">
+                    AI 기술로 더 편리하고 스마트한 의료 서비스를 제공합니다
+                </p>
+                <p class="text-gray-500 text-sm">
+                    &copy; 2026 WeRuby AI. All rights reserved.
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    </body>
+    </html>
+  `)
+})
+
 // Main page
 app.get('/', (c) => {
   return c.html(`
@@ -769,6 +1409,7 @@ app.get('/', (c) => {
                     </div>
                     <div class="hidden md:flex space-x-6 items-center">
                         <a href="#features" class="text-gray-700 hover:text-purple-600 font-semibold transition">기능소개</a>
+                        <a href="/concept" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스 컨셉</a>
                         <a href="#services" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스</a>
                         <a href="/login" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
                             <i class="fas fa-sign-in-alt mr-2"></i>로그인
