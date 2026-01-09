@@ -740,8 +740,8 @@ app.get('/login', (c) => {
   `)
 })
 
-// Service Concept page
-app.get('/concept', (c) => {
+// Main page (Service Concept)
+app.get('/', (c) => {
   return c.html(`
     <!DOCTYPE html>
     <html lang="ko">
@@ -826,8 +826,8 @@ app.get('/concept', (c) => {
                         <span class="font-black text-2xl gradient-text">WeRuby AI</span>
                     </div>
                     <div class="hidden md:flex space-x-6 items-center">
-                        <a href="/" class="text-gray-700 hover:text-purple-600 font-semibold transition">홈</a>
-                        <a href="/concept" class="text-purple-600 font-bold border-b-2 border-purple-600">서비스 컨셉</a>
+                        <a href="/" class="text-purple-600 font-bold border-b-2 border-purple-600">서비스 컨셉</a>
+                        <a href="/about" class="text-gray-700 hover:text-purple-600 font-semibold transition">소개</a>
                         <a href="/login" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
                             <i class="fas fa-sign-in-alt mr-2"></i>로그인
                         </a>
@@ -1380,8 +1380,8 @@ app.get('/concept', (c) => {
   `)
 })
 
-// Main page
-app.get('/', (c) => {
+// About page (Original home)
+app.get('/about', (c) => {
   return c.html(`
     <!DOCTYPE html>
     <html lang="ko">
@@ -1408,9 +1408,9 @@ app.get('/', (c) => {
                         <span class="font-black text-2xl gradient-text">WeRuby AI</span>
                     </div>
                     <div class="hidden md:flex space-x-6 items-center">
+                        <a href="/" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스 컨셉</a>
+                        <a href="/about" class="text-purple-600 font-bold border-b-2 border-purple-600">소개</a>
                         <a href="#features" class="text-gray-700 hover:text-purple-600 font-semibold transition">기능소개</a>
-                        <a href="/concept" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스 컨셉</a>
-                        <a href="#services" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스</a>
                         <a href="/login" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
                             <i class="fas fa-sign-in-alt mr-2"></i>로그인
                         </a>
