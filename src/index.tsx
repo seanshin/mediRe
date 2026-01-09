@@ -279,8 +279,465 @@ app.get('/api/users/:id', async (c) => {
   const { DB } = c.env
   const id = c.req.param('id')
   
-  const result = await DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first()
+  const result = await DB.prepare('SELECT id, name, email, phone, birth_date, gender, blood_type, allergies, address, status, created_at FROM users WHERE id = ?').bind(id).first()
   return c.json({ success: true, data: result })
+})
+
+// Register new user
+app.post('/api/auth/register', async (c) => {
+  const { DB } = c.env
+  const body = await c.req.json()
+  
+  try {
+    // Check if email already exists
+    const existing = await DB.prepare('SELECT id FROM users WHERE email = ?').bind(body.email).first()
+    if (existing) {
+      return c.json({ success: false, message: '이미 등록된 이메일입니다.' }, 400)
+    }
+
+    // Simple password hash (in production, use proper bcrypt)
+    const hashedPassword = body.password // TODO: Add proper hashing
+    
+    const result = await DB.prepare(`
+      INSERT INTO users (name, email, password, phone, birth_date, gender, blood_type, allergies, address, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      body.name,
+      body.email,
+      hashedPassword,
+      body.phone,
+      body.birth_date,
+      body.gender || 'other',
+      body.blood_type || null,
+      body.allergies || null,
+      body.address || null,
+      'active'
+    ).run()
+    
+    return c.json({ success: true, data: { id: result.meta.last_row_id }, message: '회원가입이 완료되었습니다.' })
+  } catch (error) {
+    return c.json({ success: false, message: '회원가입 중 오류가 발생했습니다.' }, 500)
+  }
+})
+
+// Login
+app.post('/api/auth/login', async (c) => {
+  const { DB } = c.env
+  const body = await c.req.json()
+  
+  try {
+    const user = await DB.prepare('SELECT * FROM users WHERE email = ?').bind(body.email).first()
+    
+    if (!user) {
+      return c.json({ success: false, message: '이메일 또는 비밀번호가 올바르지 않습니다.' }, 401)
+    }
+    
+    // Check password (in production, use proper bcrypt compare)
+    if (user.password !== body.password) {
+      return c.json({ success: false, message: '이메일 또는 비밀번호가 올바르지 않습니다.' }, 401)
+    }
+    
+    // Remove password from response
+    const { password, ...userWithoutPassword } = user as any
+    
+    return c.json({ success: true, data: userWithoutPassword, message: '로그인 성공' })
+  } catch (error) {
+    return c.json({ success: false, message: '로그인 중 오류가 발생했습니다.' }, 500)
+  }
+})
+
+// Update user profile
+app.put('/api/users/:id', async (c) => {
+  const { DB } = c.env
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  
+  const updates: string[] = []
+  const params: any[] = []
+  
+  if (body.name) {
+    updates.push('name = ?')
+    params.push(body.name)
+  }
+  if (body.phone) {
+    updates.push('phone = ?')
+    params.push(body.phone)
+  }
+  if (body.birth_date) {
+    updates.push('birth_date = ?')
+    params.push(body.birth_date)
+  }
+  if (body.gender) {
+    updates.push('gender = ?')
+    params.push(body.gender)
+  }
+  if (body.blood_type !== undefined) {
+    updates.push('blood_type = ?')
+    params.push(body.blood_type)
+  }
+  if (body.allergies !== undefined) {
+    updates.push('allergies = ?')
+    params.push(body.allergies)
+  }
+  if (body.address !== undefined) {
+    updates.push('address = ?')
+    params.push(body.address)
+  }
+  
+  updates.push('updated_at = CURRENT_TIMESTAMP')
+  params.push(id)
+  
+  await DB.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).bind(...params).run()
+  
+  return c.json({ success: true, message: '프로필이 업데이트되었습니다.' })
+})
+
+// Get all users (admin)
+app.get('/api/admin/users', async (c) => {
+  const { DB } = c.env
+  const status = c.req.query('status')
+  
+  let query = 'SELECT id, name, email, phone, birth_date, gender, status, created_at FROM users'
+  let params: any[] = []
+  
+  if (status) {
+    query += ' WHERE status = ?'
+    params.push(status)
+  }
+  
+  query += ' ORDER BY created_at DESC'
+  
+  const stmt = params.length > 0 ? DB.prepare(query).bind(...params) : DB.prepare(query)
+  const result = await stmt.all()
+  
+  return c.json({ success: true, data: result.results })
+})
+
+// Update user status (admin)
+app.put('/api/admin/users/:id/status', async (c) => {
+  const { DB } = c.env
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  
+  await DB.prepare('UPDATE users SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+    .bind(body.status, id)
+    .run()
+  
+  return c.json({ success: true, message: '사용자 상태가 업데이트되었습니다.' })
+})
+
+// Register page
+app.get('/register', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>회원가입 - 메디케어 AI</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="min-h-screen gradient-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-2xl w-full">
+                <div class="text-center mb-8">
+                    <a href="/" class="inline-flex items-center space-x-3 mb-6">
+                        <div class="bg-white p-3 rounded-xl shadow-lg">
+                            <i class="fas fa-heartbeat text-purple-600 text-3xl"></i>
+                        </div>
+                        <span class="font-black text-3xl text-white">메디케어 AI</span>
+                    </a>
+                    <h2 class="text-4xl font-black text-white mb-2">회원가입</h2>
+                    <p class="text-white/80 text-lg">메디케어 AI와 함께 건강을 관리하세요</p>
+                </div>
+
+                <div class="glass-card rounded-3xl p-8 shadow-2xl">
+                    <form id="registerForm" class="space-y-6">
+                        <!-- Basic Info -->
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-user-circle text-purple-600 mr-2"></i>
+                                기본 정보
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
+                                    <input type="text" name="name" required
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">생년월일 *</label>
+                                    <input type="date" name="birth_date" required
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Info -->
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-envelope text-purple-600 mr-2"></i>
+                                연락처 정보
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">이메일 *</label>
+                                    <input type="email" name="email" required
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition"
+                                           placeholder="example@email.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 *</label>
+                                    <input type="password" name="password" required minlength="6"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition"
+                                           placeholder="6자 이상 입력하세요">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 확인 *</label>
+                                    <input type="password" name="password_confirm" required minlength="6"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition"
+                                           placeholder="비밀번호를 다시 입력하세요">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">전화번호 *</label>
+                                    <input type="tel" name="phone" required pattern="[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition"
+                                           placeholder="010-1234-5678">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Info -->
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-notes-medical text-purple-600 mr-2"></i>
+                                건강 정보 (선택)
+                            </h3>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">성별</label>
+                                    <select name="gender"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition">
+                                        <option value="male">남성</option>
+                                        <option value="female">여성</option>
+                                        <option value="other">기타</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">혈액형</label>
+                                    <select name="blood_type"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition">
+                                        <option value="">선택 안함</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">알러지 정보</label>
+                                <textarea name="allergies" rows="2"
+                                          class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition"
+                                          placeholder="알러지가 있다면 입력해주세요"></textarea>
+                            </div>
+                            <div class="mt-4">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">주소</label>
+                                <input type="text" name="address"
+                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition"
+                                       placeholder="서울특별시 강남구...">
+                            </div>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="glass-card p-4 rounded-xl bg-purple-50">
+                            <label class="flex items-start cursor-pointer">
+                                <input type="checkbox" name="terms" required class="mt-1 mr-3 w-5 h-5 text-purple-600 rounded">
+                                <span class="text-sm text-gray-700">
+                                    <strong>이용약관</strong> 및 <strong>개인정보처리방침</strong>에 동의합니다. (필수)
+                                </span>
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit"
+                                class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition-transform">
+                            <i class="fas fa-user-plus mr-2"></i>회원가입 완료
+                        </button>
+
+                        <div class="text-center">
+                            <p class="text-gray-600">
+                                이미 계정이 있으신가요?
+                                <a href="/login" class="text-purple-600 font-bold hover:text-purple-700">로그인</a>
+                            </p>
+                        </div>
+                    </form>
+
+                    <div id="message" class="mt-4 hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script>
+          document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Validate password match
+            if (data.password !== data.password_confirm) {
+              showMessage('비밀번호가 일치하지 않습니다.', 'error');
+              return;
+            }
+            
+            // Remove password_confirm before sending
+            delete data.password_confirm;
+            delete data.terms;
+            
+            try {
+              const response = await axios.post('/api/auth/register', data);
+              
+              if (response.data.success) {
+                showMessage(response.data.message, 'success');
+                setTimeout(() => {
+                  window.location.href = '/login';
+                }, 2000);
+              }
+            } catch (error) {
+              const message = error.response?.data?.message || '회원가입 중 오류가 발생했습니다.';
+              showMessage(message, 'error');
+            }
+          });
+          
+          function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = \`mt-4 p-4 rounded-xl \${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}\`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+          }
+        </script>
+    </body>
+    </html>
+  `)
+})
+
+// Login page
+app.get('/login', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>로그인 - 메디케어 AI</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="min-h-screen gradient-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-md w-full">
+                <div class="text-center mb-8">
+                    <a href="/" class="inline-flex items-center space-x-3 mb-6">
+                        <div class="bg-white p-3 rounded-xl shadow-lg">
+                            <i class="fas fa-heartbeat text-purple-600 text-3xl"></i>
+                        </div>
+                        <span class="font-black text-3xl text-white">메디케어 AI</span>
+                    </a>
+                    <h2 class="text-4xl font-black text-white mb-2">로그인</h2>
+                    <p class="text-white/80 text-lg">계정에 로그인하세요</p>
+                </div>
+
+                <div class="glass-card rounded-3xl p-8 shadow-2xl">
+                    <form id="loginForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">이메일</label>
+                            <input type="email" name="email" required
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition"
+                                   placeholder="example@email.com">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호</label>
+                            <input type="password" name="password" required
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-4 focus:ring-purple-200 transition"
+                                   placeholder="비밀번호를 입력하세요">
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" name="remember" class="mr-2 w-4 h-4 text-purple-600 rounded">
+                                <span class="text-sm text-gray-700">로그인 상태 유지</span>
+                            </label>
+                            <a href="#" class="text-sm text-purple-600 font-semibold hover:text-purple-700">
+                                비밀번호 찾기
+                            </a>
+                        </div>
+
+                        <button type="submit"
+                                class="w-full btn-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:scale-105 transition-transform">
+                            <i class="fas fa-sign-in-alt mr-2"></i>로그인
+                        </button>
+
+                        <div class="text-center">
+                            <p class="text-gray-600">
+                                계정이 없으신가요?
+                                <a href="/register" class="text-purple-600 font-bold hover:text-purple-700">회원가입</a>
+                            </p>
+                        </div>
+                    </form>
+
+                    <div id="message" class="mt-4 hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script>
+          document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+              const response = await axios.post('/api/auth/login', {
+                email: data.email,
+                password: data.password
+              });
+              
+              if (response.data.success) {
+                // Store user info in localStorage
+                localStorage.setItem('user', JSON.stringify(response.data.data));
+                showMessage(response.data.message, 'success');
+                setTimeout(() => {
+                  window.location.href = '/dashboard';
+                }, 1000);
+              }
+            } catch (error) {
+              const message = error.response?.data?.message || '로그인 중 오류가 발생했습니다.';
+              showMessage(message, 'error');
+            }
+          });
+          
+          function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = \`mt-4 p-4 rounded-xl \${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}\`;
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+          }
+        </script>
+    </body>
+    </html>
+  `)
 })
 
 // Main page
@@ -313,8 +770,11 @@ app.get('/', (c) => {
                     <div class="hidden md:flex space-x-6 items-center">
                         <a href="#features" class="text-gray-700 hover:text-purple-600 font-semibold transition">기능소개</a>
                         <a href="#services" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스</a>
-                        <a href="#dashboard" class="btn-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg glow">
-                            <i class="fas fa-rocket mr-2"></i>시작하기
+                        <a href="/login" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
+                            <i class="fas fa-sign-in-alt mr-2"></i>로그인
+                        </a>
+                        <a href="/register" class="btn-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg glow">
+                            <i class="fas fa-user-plus mr-2"></i>회원가입
                         </a>
                     </div>
                 </div>
@@ -1216,6 +1676,287 @@ app.get('/', (c) => {
   `)
 })
 
+// User management page (Admin)
+app.get('/admin/users', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>사용자 관리 - 메디케어 AI</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="glass-card fixed w-full top-0 z-50 border-b border-white/20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-xl shadow-lg">
+                            <i class="fas fa-heartbeat text-white text-2xl"></i>
+                        </div>
+                        <span class="font-black text-2xl gradient-text">메디케어 AI</span>
+                        <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">ADMIN</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="/dashboard" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
+                            <i class="fas fa-arrow-left mr-2"></i>대시보드
+                        </a>
+                        <button onclick="logout()" class="glass-card text-red-600 px-4 py-2 rounded-xl font-semibold hover:bg-red-50 transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i>로그아웃
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-28">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-black gradient-text mb-2">사용자 관리</h1>
+                <p class="text-gray-600 text-lg">등록된 사용자를 관리하고 상태를 변경할 수 있습니다</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">상태 필터</label>
+                        <select id="statusFilter" class="px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-purple-500 transition">
+                            <option value="">전체</option>
+                            <option value="active">활성</option>
+                            <option value="pending">대기</option>
+                            <option value="suspended">정지</option>
+                        </select>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">검색</label>
+                        <input type="text" id="searchInput" placeholder="이름 또는 이메일 검색..." 
+                               class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-purple-500 transition">
+                    </div>
+                    <div class="self-end">
+                        <button onclick="loadUsers()" class="btn-primary text-white px-6 py-2 rounded-xl font-bold shadow-lg">
+                            <i class="fas fa-sync mr-2"></i>새로고침
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card rounded-2xl p-6 border-gradient">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">전체 사용자</p>
+                            <p class="text-4xl font-black gradient-text" id="totalUsers">0</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 p-4 rounded-2xl shadow-lg">
+                            <i class="fas fa-users text-white text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 border-gradient">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">활성 사용자</p>
+                            <p class="text-4xl font-black gradient-text" id="activeUsers">0</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-4 rounded-2xl shadow-lg">
+                            <i class="fas fa-user-check text-white text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 border-gradient">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">대기 사용자</p>
+                            <p class="text-4xl font-black gradient-text" id="pendingUsers">0</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-yellow-500 to-orange-600 p-4 rounded-2xl shadow-lg">
+                            <i class="fas fa-clock text-white text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 border-gradient">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">정지 사용자</p>
+                            <p class="text-4xl font-black gradient-text" id="suspendedUsers">0</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-red-500 to-pink-600 p-4 rounded-2xl shadow-lg">
+                            <i class="fas fa-user-slash text-white text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="glass-card rounded-3xl overflow-hidden shadow-2xl">
+                <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+                    <h2 class="text-2xl font-bold text-gray-900">사용자 목록</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">ID</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">이름</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">이메일</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">전화번호</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">성별</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">생년월일</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">상태</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">가입일</th>
+                                <th class="px-6 py-4 text-left text-sm font-bold text-gray-700">액션</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody" class="divide-y divide-gray-200">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script>
+          let allUsers = [];
+
+          async function loadUsers() {
+            try {
+              const status = document.getElementById('statusFilter').value;
+              const url = status ? \`/api/admin/users?status=\${status}\` : '/api/admin/users';
+              
+              const response = await axios.get(url);
+              allUsers = response.data.data || [];
+              
+              updateStatistics();
+              renderUsers(allUsers);
+            } catch (error) {
+              console.error('사용자 목록 로드 실패:', error);
+              alert('사용자 목록을 불러오는데 실패했습니다.');
+            }
+          }
+
+          function updateStatistics() {
+            const total = allUsers.length;
+            const active = allUsers.filter(u => u.status === 'active').length;
+            const pending = allUsers.filter(u => u.status === 'pending').length;
+            const suspended = allUsers.filter(u => u.status === 'suspended').length;
+
+            document.getElementById('totalUsers').textContent = total;
+            document.getElementById('activeUsers').textContent = active;
+            document.getElementById('pendingUsers').textContent = pending;
+            document.getElementById('suspendedUsers').textContent = suspended;
+          }
+
+          function renderUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            
+            if (users.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-8 text-center text-gray-500">사용자가 없습니다.</td></tr>';
+              return;
+            }
+
+            const statusColors = {
+              active: 'bg-green-100 text-green-800',
+              pending: 'bg-yellow-100 text-yellow-800',
+              suspended: 'bg-red-100 text-red-800'
+            };
+
+            const statusText = {
+              active: '활성',
+              pending: '대기',
+              suspended: '정지'
+            };
+
+            const genderText = {
+              male: '남성',
+              female: '여성',
+              other: '기타'
+            };
+
+            tbody.innerHTML = users.map(user => \`
+              <tr class="hover:bg-purple-50 transition">
+                <td class="px-6 py-4 text-sm font-semibold text-gray-900">\${user.id}</td>
+                <td class="px-6 py-4 text-sm font-semibold text-gray-900">\${user.name}</td>
+                <td class="px-6 py-4 text-sm text-gray-600">\${user.email}</td>
+                <td class="px-6 py-4 text-sm text-gray-600">\${user.phone}</td>
+                <td class="px-6 py-4 text-sm text-gray-600">\${genderText[user.gender] || user.gender}</td>
+                <td class="px-6 py-4 text-sm text-gray-600">\${user.birth_date}</td>
+                <td class="px-6 py-4">
+                  <span class="px-3 py-1 rounded-full text-xs font-bold \${statusColors[user.status] || 'bg-gray-100 text-gray-800'}">
+                    \${statusText[user.status] || user.status}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-600">\${new Date(user.created_at).toLocaleDateString('ko-KR')}</td>
+                <td class="px-6 py-4">
+                  <div class="flex gap-2">
+                    \${user.status !== 'active' ? \`
+                      <button onclick="changeStatus(\${user.id}, 'active')" 
+                              class="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-semibold hover:bg-green-200 transition">
+                        활성화
+                      </button>
+                    \` : ''}
+                    \${user.status !== 'suspended' ? \`
+                      <button onclick="changeStatus(\${user.id}, 'suspended')" 
+                              class="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-semibold hover:bg-red-200 transition">
+                        정지
+                      </button>
+                    \` : ''}
+                  </div>
+                </td>
+              </tr>
+            \`).join('');
+          }
+
+          async function changeStatus(userId, newStatus) {
+            if (!confirm(\`사용자 상태를 '\${newStatus === 'active' ? '활성' : '정지'}'로 변경하시겠습니까?\`)) {
+              return;
+            }
+
+            try {
+              await axios.put(\`/api/admin/users/\${userId}/status\`, { status: newStatus });
+              alert('상태가 변경되었습니다.');
+              loadUsers();
+            } catch (error) {
+              console.error('상태 변경 실패:', error);
+              alert('상태 변경에 실패했습니다.');
+            }
+          }
+
+          function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '/';
+          }
+
+          // Search functionality
+          document.getElementById('searchInput').addEventListener('input', (e) => {
+            const search = e.target.value.toLowerCase();
+            const filtered = allUsers.filter(user => 
+              user.name.toLowerCase().includes(search) || 
+              user.email.toLowerCase().includes(search)
+            );
+            renderUsers(filtered);
+          });
+
+          // Status filter
+          document.getElementById('statusFilter').addEventListener('change', loadUsers);
+
+          // Load users on page load
+          document.addEventListener('DOMContentLoaded', loadUsers);
+        </script>
+    </body>
+    </html>
+  `)
+})
+
 // Dashboard page
 app.get('/dashboard', (c) => {
   return c.html(`
@@ -1244,11 +1985,22 @@ app.get('/dashboard', (c) => {
                         <button id="aiChatBtn" class="btn-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg glow hover:scale-105 transition-transform">
                             <i class="fas fa-robot mr-2"></i>AI 어시스턴트
                         </button>
-                        <div class="flex items-center space-x-3 glass-card px-4 py-2 rounded-xl">
-                            <span class="font-semibold text-gray-700">홍길동님</span>
+                        <a href="/admin/users" class="glass-card px-4 py-2 rounded-xl text-gray-700 font-semibold hover:bg-purple-50 transition">
+                            <i class="fas fa-users-cog mr-2"></i>관리
+                        </a>
+                        <div class="flex items-center space-x-3 glass-card px-4 py-2 rounded-xl cursor-pointer" onclick="toggleUserMenu()">
+                            <span class="font-semibold text-gray-700" id="userName">홍길동님</span>
                             <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
                                 <i class="fas fa-user text-white"></i>
                             </div>
+                        </div>
+                        <div id="userMenu" class="hidden absolute right-4 top-24 glass-card rounded-xl shadow-xl p-4 z-50 min-w-[200px]">
+                            <a href="/profile" class="block px-4 py-2 text-gray-700 hover:bg-purple-50 rounded-lg transition">
+                                <i class="fas fa-user-circle mr-2"></i>내 프로필
+                            </a>
+                            <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition">
+                                <i class="fas fa-sign-out-alt mr-2"></i>로그아웃
+                            </button>
                         </div>
                     </div>
                 </div>

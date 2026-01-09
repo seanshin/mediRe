@@ -1,6 +1,15 @@
 // Dashboard functionality
 const API_BASE = '/api';
-const CURRENT_USER_ID = 1; // Demo user ID
+
+// Get current user from localStorage
+let currentUser = null;
+try {
+  currentUser = JSON.parse(localStorage.getItem('user'));
+} catch (e) {
+  console.error('Failed to parse user data');
+}
+
+const CURRENT_USER_ID = currentUser?.id || 1; // Fallback to demo user
 
 // State management
 let currentTab = 'appointments';
@@ -12,10 +21,38 @@ let chatSessionId = null;
 
 // Initialize dashboard
 async function initDashboard() {
+  // Check if user is logged in
+  if (currentUser) {
+    document.getElementById('userName').textContent = currentUser.name + '님';
+  }
+  
   await loadData();
   updateSummaryCards();
   setupEventListeners();
 }
+
+// Logout function
+function logout() {
+  if (confirm('로그아웃 하시겠습니까?')) {
+    localStorage.removeItem('user');
+    window.location.href = '/';
+  }
+}
+
+// Toggle user menu
+function toggleUserMenu() {
+  const menu = document.getElementById('userMenu');
+  menu.classList.toggle('hidden');
+}
+
+// Close user menu when clicking outside
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('userMenu');
+  const userInfo = e.target.closest('[onclick="toggleUserMenu()"]');
+  if (!userInfo && !menu?.contains(e.target)) {
+    menu?.classList.add('hidden');
+  }
+});
 
 // Load all data
 async function loadData() {
