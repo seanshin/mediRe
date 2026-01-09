@@ -1257,6 +1257,9 @@ app.get('/', (c) => {
                     <div class="hidden md:flex space-x-6 items-center">
                         <a href="/" class="text-purple-600 font-bold border-b-2 border-purple-600">서비스 컨셉</a>
                         <a href="/about" class="text-gray-700 hover:text-purple-600 font-semibold transition">소개</a>
+                        <a href="/api-docs" class="text-gray-700 hover:text-purple-600 font-semibold transition">
+                            <i class="fas fa-code mr-1"></i>API 연동
+                        </a>
                         <a href="https://weruby.co.kr" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-purple-600 font-semibold transition">
                             <i class="fas fa-building mr-1"></i>서비스 제공업체
                             <i class="fas fa-external-link-alt text-xs ml-1"></i>
@@ -1995,6 +1998,9 @@ app.get('/about', (c) => {
                         <a href="/" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스 컨셉</a>
                         <a href="/about" class="text-purple-600 font-bold border-b-2 border-purple-600">소개</a>
                         <a href="#features" class="text-gray-700 hover:text-purple-600 font-semibold transition">기능소개</a>
+                        <a href="/api-docs" class="text-gray-700 hover:text-purple-600 font-semibold transition">
+                            <i class="fas fa-code mr-1"></i>API 연동
+                        </a>
                         <a href="https://weruby.co.kr" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-purple-600 font-semibold transition">
                             <i class="fas fa-building mr-1"></i>서비스 제공업체
                             <i class="fas fa-external-link-alt text-xs ml-1"></i>
@@ -3900,6 +3906,738 @@ app.get('/dashboard', (c) => {
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/dashboard.js"></script>
+    </body>
+    </html>
+  `)
+})
+
+// API Documentation page
+app.get('/api-docs', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>API 연동 문서 - WeRuby AI</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/styles.css" rel="stylesheet">
+        <style>
+            .api-card:hover { transform: translateY(-4px); }
+            .method-badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 12px; }
+            .method-get { background: #10b981; color: white; }
+            .method-post { background: #3b82f6; color: white; }
+            .method-put { background: #f59e0b; color: white; }
+            .method-delete { background: #ef4444; color: white; }
+            .code-block { background: #1e293b; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 14px; }
+            .json-key { color: #7dd3fc; }
+            .json-string { color: #a78bfa; }
+            .json-number { color: #fbbf24; }
+        </style>
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="glass-card fixed w-full top-0 z-50 border-b border-white/20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <div class="flex items-center space-x-3">
+                        <div class="icon-pulse bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-xl shadow-lg">
+                            <i class="fas fa-heartbeat text-white text-2xl"></i>
+                        </div>
+                        <span class="font-black text-2xl gradient-text">WeRuby AI</span>
+                    </div>
+                    <div class="hidden md:flex space-x-6 items-center">
+                        <a href="/" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스 컨셉</a>
+                        <a href="/about" class="text-gray-700 hover:text-purple-600 font-semibold transition">소개</a>
+                        <a href="/api-docs" class="text-purple-600 font-bold border-b-2 border-purple-600">API 연동</a>
+                        <a href="https://weruby.co.kr" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-purple-600 font-semibold transition">
+                            <i class="fas fa-building mr-1"></i>서비스 제공업체
+                            <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                        </a>
+                        <a href="/login" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
+                            <i class="fas fa-sign-in-alt mr-2"></i>로그인
+                        </a>
+                        <a href="/register" class="btn-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg glow">
+                            <i class="fas fa-user-plus mr-2"></i>회원가입
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="pt-32 pb-20 min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Header -->
+                <div class="text-center mb-12">
+                    <div class="inline-block bg-purple-100 px-6 py-2 rounded-full mb-4">
+                        <span class="text-purple-700 font-bold text-sm"><i class="fas fa-code mr-2"></i>개발자 문서</span>
+                    </div>
+                    <h1 class="text-5xl font-black gradient-text mb-4">API 연동 문서</h1>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        WeRuby AI의 모든 API 엔드포인트를 확인하고 연동하세요. RESTful API로 설계되어 쉽고 직관적입니다.
+                    </p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid md:grid-cols-4 gap-6 mb-12">
+                    <div class="glass-card rounded-2xl p-6 text-center card-hover">
+                        <div class="text-4xl font-black gradient-text mb-2">38+</div>
+                        <p class="text-gray-600 font-semibold">API 엔드포인트</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 text-center card-hover">
+                        <div class="text-4xl font-black gradient-text mb-2">8</div>
+                        <p class="text-gray-600 font-semibold">카테고리</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 text-center card-hover">
+                        <div class="text-4xl font-black gradient-text mb-2">REST</div>
+                        <p class="text-gray-600 font-semibold">API 방식</p>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 text-center card-hover">
+                        <div class="text-4xl font-black gradient-text mb-2">JSON</div>
+                        <p class="text-gray-600 font-semibold">응답 형식</p>
+                    </div>
+                </div>
+
+                <!-- Base URL -->
+                <div class="glass-card rounded-2xl p-8 mb-12 border-l-4 border-purple-500">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                        <i class="fas fa-server text-purple-600 mr-2"></i>Base URL
+                    </h3>
+                    <div class="code-block">
+                        <span class="json-string">https://your-domain.com/api</span>
+                    </div>
+                    <p class="text-gray-600 mt-4">모든 API 요청은 위의 Base URL을 기준으로 합니다.</p>
+                </div>
+
+                <!-- Category Navigation -->
+                <div class="glass-card rounded-2xl p-6 mb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                        <i class="fas fa-list text-purple-600 mr-2"></i>카테고리 바로가기
+                    </h3>
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <a href="#hospitals" class="text-center p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition">
+                            <i class="fas fa-hospital text-blue-600 text-2xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">병원/의사</p>
+                        </a>
+                        <a href="#appointments" class="text-center p-4 rounded-xl bg-green-50 hover:bg-green-100 transition">
+                            <i class="fas fa-calendar-check text-green-600 text-2xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">예약 관리</p>
+                        </a>
+                        <a href="#medical" class="text-center p-4 rounded-xl bg-purple-50 hover:bg-purple-100 transition">
+                            <i class="fas fa-file-medical text-purple-600 text-2xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">의료 기록</p>
+                        </a>
+                        <a href="#prescriptions" class="text-center p-4 rounded-xl bg-pink-50 hover:bg-pink-100 transition">
+                            <i class="fas fa-pills text-pink-600 text-2xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">처방전</p>
+                        </a>
+                        <a href="#health" class="text-center p-4 rounded-xl bg-red-50 hover:bg-red-100 transition">
+                            <i class="fas fa-heartbeat text-red-600 text-2xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">건강상태</p>
+                        </a>
+                        <a href="#insurance" class="text-center p-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 transition">
+                            <i class="fas fa-shield-alt text-indigo-600 text-2xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">보험</p>
+                        </a>
+                        <a href="#users" class="text-center p-4 rounded-xl bg-yellow-50 hover:bg-yellow-100 transition">
+                            <i class="fas fa-user text-yellow-600 text-2xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">사용자</p>
+                        </a>
+                        <a href="#chat" class="text-center p-4 rounded-xl bg-teal-50 hover:bg-teal-100 transition">
+                            <i class="fas fa-comments text-teal-600 text-2xl mb-2"></i>
+                            <p class="font-semibold text-gray-800">채팅</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- API Categories -->
+                
+                <!-- 1. Hospitals & Doctors APIs -->
+                <div id="hospitals" class="mb-12">
+                    <div class="glass-card rounded-3xl p-8">
+                        <h2 class="text-3xl font-black gradient-text mb-6">
+                            <i class="fas fa-hospital text-blue-600 mr-3"></i>병원 및 의사 API
+                        </h2>
+                        <p class="text-gray-600 mb-8">병원 정보, 의사 목록, 전문의 검색 등 의료 기관 관련 API</p>
+
+                        <!-- GET /api/hospitals -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/hospitals</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">모든 병원 목록을 평점 순으로 조회합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">응답 예시</h4>
+                                <div class="code-block">
+{
+  <span class="json-key">"success"</span>: <span class="json-string">true</span>,
+  <span class="json-key">"data"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-number">1</span>,
+      <span class="json-key">"name"</span>: <span class="json-string">"서울대학교병원"</span>,
+      <span class="json-key">"address"</span>: <span class="json-string">"서울특별시 종로구 대학로 103"</span>,
+      <span class="json-key">"phone"</span>: <span class="json-string">"02-2072-2114"</span>,
+      <span class="json-key">"rating"</span>: <span class="json-number">4.8</span>,
+      <span class="json-key">"specialties"</span>: [<span class="json-string">"내과"</span>, <span class="json-string">"외과"</span>, <span class="json-string">"정형외과"</span>]
+    }
+  ]
+}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GET /api/hospitals/:id -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/hospitals/:id</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">특정 병원의 상세 정보를 조회합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">파라미터</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li><code>id</code> (number, required) - 병원 ID</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- GET /api/hospitals/:id/doctors -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/hospitals/:id/doctors</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">특정 병원의 의사 목록을 조회합니다 (평점순).</p>
+                        </div>
+
+                        <!-- GET /api/doctors -->
+                        <div class="api-card glass-card rounded-xl p-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/doctors</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">의사 목록 조회 (전문과목 필터링 가능)</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">쿼리 파라미터</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li><code>specialty</code> (string, optional) - 전문과목 (예: "내과", "외과")</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Appointments APIs -->
+                <div id="appointments" class="mb-12">
+                    <div class="glass-card rounded-3xl p-8">
+                        <h2 class="text-3xl font-black gradient-text mb-6">
+                            <i class="fas fa-calendar-check text-green-600 mr-3"></i>예약 관리 API
+                        </h2>
+                        <p class="text-gray-600 mb-8">병원 예약 생성, 조회, 수정 및 상태 관리</p>
+
+                        <!-- POST /api/appointments -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-post">POST</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/appointments</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">새로운 예약을 생성합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">요청 바디</h4>
+                                <div class="code-block">
+{
+  <span class="json-key">"user_id"</span>: <span class="json-number">1</span>,
+  <span class="json-key">"hospital_id"</span>: <span class="json-number">1</span>,
+  <span class="json-key">"doctor_id"</span>: <span class="json-number">1</span>,
+  <span class="json-key">"appointment_date"</span>: <span class="json-string">"2026-01-15"</span>,
+  <span class="json-key">"appointment_time"</span>: <span class="json-string">"10:00"</span>,
+  <span class="json-key">"symptoms"</span>: <span class="json-string">"두통과 어지러움"</span>
+}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GET /api/users/:userId/appointments -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/appointments</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자의 모든 예약 내역을 조회합니다.</p>
+                        </div>
+
+                        <!-- PUT /api/appointments/:id -->
+                        <div class="api-card glass-card rounded-xl p-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-put">PUT</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/appointments/:id</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">예약 정보를 수정합니다 (날짜, 시간, 상태 등).</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">상태 값</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li><code>scheduled</code> - 예약됨</li>
+                                    <li><code>completed</code> - 완료</li>
+                                    <li><code>cancelled</code> - 취소</li>
+                                    <li><code>no-show</code> - 노쇼</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Medical Records APIs -->
+                <div id="medical" class="mb-12">
+                    <div class="glass-card rounded-3xl p-8">
+                        <h2 class="text-3xl font-black gradient-text mb-6">
+                            <i class="fas fa-file-medical text-purple-600 mr-3"></i>의료 기록 API
+                        </h2>
+                        <p class="text-gray-600 mb-8">진료 기록 조회 및 저장</p>
+
+                        <!-- GET /api/users/:userId/medical-records -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/medical-records</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자의 모든 의료 기록을 조회합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">응답 예시</h4>
+                                <div class="code-block">
+{
+  <span class="json-key">"success"</span>: <span class="json-string">true</span>,
+  <span class="json-key">"data"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-number">1</span>,
+      <span class="json-key">"visit_date"</span>: <span class="json-string">"2026-01-12"</span>,
+      <span class="json-key">"diagnosis"</span>: <span class="json-string">"급성 상기도 감염"</span>,
+      <span class="json-key">"symptoms"</span>: <span class="json-string">"기침, 콧물, 미열"</span>,
+      <span class="json-key">"treatment"</span>: <span class="json-string">"충분한 휴식, 수분 섭취"</span>
+    }
+  ]
+}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- POST /api/medical-records -->
+                        <div class="api-card glass-card rounded-xl p-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-post">POST</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/medical-records</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">새로운 의료 기록을 생성합니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Prescriptions APIs -->
+                <div id="prescriptions" class="mb-12">
+                    <div class="glass-card rounded-3xl p-8">
+                        <h2 class="text-3xl font-black gradient-text mb-6">
+                            <i class="fas fa-pills text-pink-600 mr-3"></i>처방전 API
+                        </h2>
+                        <p class="text-gray-600 mb-8">처방전 조회 및 관리</p>
+
+                        <!-- GET /api/users/:userId/prescriptions -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/prescriptions</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자의 처방전 목록을 조회합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">쿼리 파라미터</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li><code>status</code> (string, optional) - active, completed, cancelled</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- POST /api/prescriptions -->
+                        <div class="api-card glass-card rounded-xl p-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-post">POST</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/prescriptions</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">새로운 처방전을 생성합니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Health Status APIs -->
+                <div id="health" class="mb-12">
+                    <div class="glass-card rounded-3xl p-8">
+                        <h2 class="text-3xl font-black gradient-text mb-6">
+                            <i class="fas fa-heartbeat text-red-600 mr-3"></i>건강상태 API
+                        </h2>
+                        <p class="text-gray-600 mb-8">의료 기록 기반 건강 분석 및 모니터링</p>
+
+                        <!-- GET /api/users/:userId/health/status -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/health/status</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자의 최신 건강 상태를 조회합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">응답 예시</h4>
+                                <div class="code-block">
+{
+  <span class="json-key">"success"</span>: <span class="json-string">true</span>,
+  <span class="json-key">"data"</span>: {
+    <span class="json-key">"overall_score"</span>: <span class="json-number">75</span>,
+    <span class="json-key">"health_level"</span>: <span class="json-string">"good"</span>,
+    <span class="json-key">"blood_pressure_systolic"</span>: <span class="json-number">128</span>,
+    <span class="json-key">"blood_pressure_diastolic"</span>: <span class="json-number">82</span>,
+    <span class="json-key">"heart_rate"</span>: <span class="json-number">72</span>,
+    <span class="json-key">"bmi"</span>: <span class="json-number">23.7</span>,
+    <span class="json-key">"diabetes_risk"</span>: <span class="json-string">"low"</span>,
+    <span class="json-key">"hypertension_risk"</span>: <span class="json-string">"medium"</span>
+  }
+}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GET /api/users/:userId/health/goals -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/health/goals</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자의 건강 목표 목록을 조회합니다.</p>
+                        </div>
+
+                        <!-- GET /api/users/:userId/health/alerts -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/health/alerts</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">건강 알림 목록을 조회합니다.</p>
+                        </div>
+
+                        <!-- GET /api/users/:userId/health/dashboard -->
+                        <div class="api-card glass-card rounded-xl p-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/health/dashboard</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">건강 대시보드 요약 정보를 조회합니다 (건강상태, 활성 목표, 미읽음 알림 등).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Insurance APIs -->
+                <div id="insurance" class="mb-12">
+                    <div class="glass-card rounded-3xl p-8">
+                        <h2 class="text-3xl font-black gradient-text mb-6">
+                            <i class="fas fa-shield-alt text-indigo-600 mr-3"></i>보험 API
+                        </h2>
+                        <p class="text-gray-600 mb-8">보험 정책, 청구, 영수증 관리</p>
+
+                        <!-- GET /api/users/:userId/insurance/policies -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/insurance/policies</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자의 보험 정책 목록을 조회합니다.</p>
+                        </div>
+
+                        <!-- GET /api/users/:userId/insurance/claims -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/insurance/claims</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">보험 청구 내역을 조회합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">청구 상태</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li><code>pending</code> - 대기 중</li>
+                                    <li><code>submitted</code> - 제출 완료</li>
+                                    <li><code>under_review</code> - 심사 중</li>
+                                    <li><code>approved</code> - 승인 완료</li>
+                                    <li><code>rejected</code> - 거절됨</li>
+                                    <li><code>paid</code> - 지급 완료</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- GET /api/users/:userId/insurance/statistics -->
+                        <div class="api-card glass-card rounded-xl p-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:userId/insurance/statistics</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">보험 통계 정보를 조회합니다 (활성 보험 수, 총 청구액, 지급액 등).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Users & Auth APIs -->
+                <div id="users" class="mb-12">
+                    <div class="glass-card rounded-3xl p-8">
+                        <h2 class="text-3xl font-black gradient-text mb-6">
+                            <i class="fas fa-user text-yellow-600 mr-3"></i>사용자 및 인증 API
+                        </h2>
+                        <p class="text-gray-600 mb-8">회원가입, 로그인, 프로필 관리</p>
+
+                        <!-- POST /api/auth/register -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-post">POST</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/auth/register</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">새로운 사용자를 등록합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">요청 바디</h4>
+                                <div class="code-block">
+{
+  <span class="json-key">"name"</span>: <span class="json-string">"홍길동"</span>,
+  <span class="json-key">"email"</span>: <span class="json-string">"hong@example.com"</span>,
+  <span class="json-key">"password"</span>: <span class="json-string">"secure_password"</span>,
+  <span class="json-key">"phone"</span>: <span class="json-string">"010-1234-5678"</span>,
+  <span class="json-key">"birth_date"</span>: <span class="json-string">"1990-05-15"</span>,
+  <span class="json-key">"gender"</span>: <span class="json-string">"male"</span>
+}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- POST /api/auth/login -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-post">POST</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/auth/login</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자 로그인을 처리합니다.</p>
+                        </div>
+
+                        <!-- GET /api/users/:id -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:id</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자 정보를 조회합니다.</p>
+                        </div>
+
+                        <!-- PUT /api/users/:id -->
+                        <div class="api-card glass-card rounded-xl p-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-put">PUT</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/users/:id</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">사용자 프로필을 업데이트합니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. Chat APIs -->
+                <div id="chat" class="mb-12">
+                    <div class="glass-card rounded-3xl p-8">
+                        <h2 class="text-3xl font-black gradient-text mb-6">
+                            <i class="fas fa-comments text-teal-600 mr-3"></i>채팅 API
+                        </h2>
+                        <p class="text-gray-600 mb-8">AI 어시스턴트 채팅 세션 및 메시지 관리</p>
+
+                        <!-- POST /api/chat/sessions -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-post">POST</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/chat/sessions</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">새로운 채팅 세션을 생성합니다.</p>
+                            <div class="mb-4">
+                                <h4 class="font-bold text-gray-800 mb-2">세션 타입</h4>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li><code>appointment</code> - 예약 관련</li>
+                                    <li><code>medical_inquiry</code> - 의료 문의</li>
+                                    <li><code>prescription</code> - 처방전 관련</li>
+                                    <li><code>general</code> - 일반 대화</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- POST /api/chat/messages -->
+                        <div class="api-card glass-card rounded-xl p-6 mb-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-post">POST</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/chat/messages</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">세션에 새 메시지를 추가합니다.</p>
+                        </div>
+
+                        <!-- GET /api/chat/sessions/:sessionId/messages -->
+                        <div class="api-card glass-card rounded-xl p-6 transition-all">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="method-badge method-get">GET</span>
+                                    <code class="text-lg font-semibold text-gray-800">/api/chat/sessions/:sessionId/messages</code>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">특정 세션의 모든 메시지를 조회합니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Response Format -->
+                <div class="glass-card rounded-3xl p-8 mb-12">
+                    <h2 class="text-3xl font-black gradient-text mb-6">
+                        <i class="fas fa-code text-purple-600 mr-3"></i>응답 형식
+                    </h2>
+                    <p class="text-gray-600 mb-6">모든 API는 일관된 JSON 응답 형식을 사용합니다.</p>
+                    
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">성공 응답</h3>
+                    <div class="code-block mb-6">
+{
+  <span class="json-key">"success"</span>: <span class="json-string">true</span>,
+  <span class="json-key">"data"</span>: { <span class="text-gray-400">/* 응답 데이터 */</span> }
+}
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">오류 응답</h3>
+                    <div class="code-block">
+{
+  <span class="json-key">"success"</span>: <span class="json-string">false</span>,
+  <span class="json-key">"error"</span>: <span class="json-string">"Error message"</span>,
+  <span class="json-key">"code"</span>: <span class="json-number">400</span>
+}
+                    </div>
+                </div>
+
+                <!-- Error Codes -->
+                <div class="glass-card rounded-3xl p-8 mb-12">
+                    <h2 class="text-3xl font-black gradient-text mb-6">
+                        <i class="fas fa-exclamation-triangle text-orange-600 mr-3"></i>HTTP 상태 코드
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-green-50 rounded-xl p-4 border-l-4 border-green-500">
+                            <h4 class="font-bold text-green-800 mb-2">200 OK</h4>
+                            <p class="text-gray-700">요청이 성공적으로 처리되었습니다.</p>
+                        </div>
+                        <div class="bg-blue-50 rounded-xl p-4 border-l-4 border-blue-500">
+                            <h4 class="font-bold text-blue-800 mb-2">201 Created</h4>
+                            <p class="text-gray-700">리소스가 성공적으로 생성되었습니다.</p>
+                        </div>
+                        <div class="bg-yellow-50 rounded-xl p-4 border-l-4 border-yellow-500">
+                            <h4 class="font-bold text-yellow-800 mb-2">400 Bad Request</h4>
+                            <p class="text-gray-700">잘못된 요청입니다. 요청 데이터를 확인하세요.</p>
+                        </div>
+                        <div class="bg-orange-50 rounded-xl p-4 border-l-4 border-orange-500">
+                            <h4 class="font-bold text-orange-800 mb-2">404 Not Found</h4>
+                            <p class="text-gray-700">요청한 리소스를 찾을 수 없습니다.</p>
+                        </div>
+                        <div class="bg-red-50 rounded-xl p-4 border-l-4 border-red-500">
+                            <h4 class="font-bold text-red-800 mb-2">500 Internal Server Error</h4>
+                            <p class="text-gray-700">서버 오류가 발생했습니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rate Limiting -->
+                <div class="glass-card rounded-3xl p-8 mb-12 bg-gradient-to-br from-purple-50 to-pink-50">
+                    <h2 class="text-3xl font-black gradient-text mb-6">
+                        <i class="fas fa-gauge-high text-purple-600 mr-3"></i>속도 제한 (Rate Limiting)
+                    </h2>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-xl p-6 text-center">
+                            <div class="text-4xl font-black text-purple-600 mb-2">1000</div>
+                            <p class="text-gray-700 font-semibold">요청/시간</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 text-center">
+                            <div class="text-4xl font-black text-pink-600 mb-2">100</div>
+                            <p class="text-gray-700 font-semibold">요청/분</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-6 text-center">
+                            <div class="text-4xl font-black text-blue-600 mb-2">10</div>
+                            <p class="text-gray-700 font-semibold">요청/초</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mt-6 text-center">속도 제한 초과 시 <code class="bg-white px-2 py-1 rounded">429 Too Many Requests</code> 응답이 반환됩니다.</p>
+                </div>
+
+                <!-- Contact & Support -->
+                <div class="glass-card rounded-3xl p-8 text-center">
+                    <h2 class="text-3xl font-black gradient-text mb-4">
+                        <i class="fas fa-headset text-purple-600 mr-3"></i>지원이 필요하신가요?
+                    </h2>
+                    <p class="text-gray-600 mb-6">API 연동에 도움이 필요하거나 문의사항이 있으시면 언제든지 연락주세요.</p>
+                    <div class="flex justify-center gap-4">
+                        <a href="mailto:api@weruby.co.kr" class="btn-primary text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:scale-105 transition-transform">
+                            <i class="fas fa-envelope mr-2"></i>이메일 문의
+                        </a>
+                        <a href="https://weruby.co.kr" target="_blank" class="glass-card px-8 py-4 rounded-xl font-bold hover:bg-purple-50 transition">
+                            <i class="fas fa-globe mr-2"></i>웹사이트 방문
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <p class="text-gray-400">&copy; 2026 WeRuby AI. All rights reserved.</p>
+                <p class="text-gray-500 mt-2">Powered by Cloudflare Workers & Hono</p>
+            </div>
+        </footer>
+
+        <script src="/static/app.js"></script>
     </body>
     </html>
   `)
