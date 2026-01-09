@@ -828,7 +828,7 @@ app.get('/', (c) => {
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row justify-center gap-6 mb-16 fade-in-delay-3">
+                    <div class="flex flex-col sm:flex-row justify-center gap-6 mb-8 fade-in-delay-3">
                         <a href="/register" class="group btn-primary text-white px-12 py-5 rounded-2xl font-bold text-xl shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105">
                             <i class="fas fa-rocket mr-2 group-hover:rotate-12 transition-transform"></i>
                             지금 무료로 시작하기
@@ -839,8 +839,49 @@ app.get('/', (c) => {
                         </a>
                     </div>
 
+                    <!-- Quick Features Preview -->
+                    <div class="max-w-5xl mx-auto mb-8 fade-in-delay-3" style="animation-delay: 0.7s">
+                        <div class="glass-card-dark p-6 rounded-2xl">
+                            <div class="grid md:grid-cols-5 gap-4">
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🎤</div>
+                                    <p class="text-white/90 text-sm font-semibold">음성 인식</p>
+                                    <p class="text-white/60 text-xs mt-1">말로 예약하기</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🤖</div>
+                                    <p class="text-white/90 text-sm font-semibold">AI 챗봇</p>
+                                    <p class="text-white/60 text-xs mt-1">24시간 상담</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">📱</div>
+                                    <p class="text-white/90 text-sm font-semibold">모바일 최적화</p>
+                                    <p class="text-white/60 text-xs mt-1">언제 어디서나</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">🔒</div>
+                                    <p class="text-white/90 text-sm font-semibold">보안 인증</p>
+                                    <p class="text-white/60 text-xs mt-1">안전한 보호</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-3xl mb-2">⚡</div>
+                                    <p class="text-white/90 text-sm font-semibold">빠른 처리</p>
+                                    <p class="text-white/60 text-xs mt-1">5초 이내 응답</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Use Case Scenarios -->
-                    <div class="max-w-6xl mx-auto mt-8">
+                    <div class="max-w-6xl mx-auto">
+                        <!-- Section Title -->
+                        <div class="text-center mb-6 fade-in-delay-3" style="animation-delay: 0.8s">
+                            <h2 class="text-3xl font-black text-white mb-3">
+                                <i class="fas fa-lightbulb text-yellow-300 mr-2"></i>
+                                실제 사용 시나리오
+                            </h2>
+                            <p class="text-white/80 text-lg">메디케어 AI는 이렇게 당신을 도와드립니다</p>
+                        </div>
                         <!-- Main Scenarios -->
                         <div class="grid md:grid-cols-3 gap-4 mb-4">
                             <!-- Scenario 1 -->
@@ -1003,7 +1044,7 @@ app.get('/', (c) => {
                         </div>
 
                         <!-- Key Benefits Grid -->
-                        <div class="grid md:grid-cols-4 gap-4">
+                        <div class="grid md:grid-cols-4 gap-4 mb-6">
                             <div class="glass-card-dark p-6 rounded-2xl text-center fade-in-delay-3" style="animation-delay: 1.6s">
                                 <div class="text-4xl font-black text-white mb-2">50K+</div>
                                 <div class="text-white/70 text-sm font-semibold">누적 예약 건수</div>
@@ -1023,6 +1064,49 @@ app.get('/', (c) => {
                                 <div class="text-4xl font-black text-white mb-2">5초</div>
                                 <div class="text-white/70 text-sm font-semibold">평균 응답 시간</div>
                                 <div class="text-yellow-300 text-xs mt-2">초고속 처리</div>
+                            </div>
+                        </div>
+
+                        <!-- Why Choose Us -->
+                        <div class="glass-card-dark p-8 rounded-3xl text-center fade-in-delay-3" style="animation-delay: 2s">
+                            <h3 class="text-2xl font-black text-white mb-6">
+                                <i class="fas fa-award text-yellow-300 mr-2"></i>
+                                메디케어 AI를 선택해야 하는 이유
+                            </h3>
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="text-left">
+                                    <div class="flex items-start gap-3 mb-3">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-check text-green-300"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-white font-bold mb-1">전화 대기 없음</h4>
+                                            <p class="text-white/70 text-sm">복잡한 전화 통화 없이 AI와 대화만으로 즉시 예약</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-left">
+                                    <div class="flex items-start gap-3 mb-3">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-check text-blue-300"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-white font-bold mb-1">병원 비교 자동화</h4>
+                                            <p class="text-white/70 text-sm">여러 병원을 일일이 검색할 필요 없이 최적의 병원 추천</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-left">
+                                    <div class="flex items-start gap-3 mb-3">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-check text-purple-300"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-white font-bold mb-1">의료 기록 통합</h4>
+                                            <p class="text-white/70 text-sm">흩어진 병원 기록을 한 곳에서 체계적으로 관리</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
