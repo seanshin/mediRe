@@ -488,8 +488,297 @@ app.get('/', (c) => {
             </div>
         </section>
 
+        <!-- Statistics Section -->
+        <section class="py-20 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="glass-card rounded-3xl p-12 border-gradient">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-black gradient-text mb-4">믿을 수 있는 숫자</h2>
+                        <p class="text-gray-600 text-lg">메디케어 AI가 만들어가는 성과</p>
+                    </div>
+                    <div class="grid md:grid-cols-4 gap-8">
+                        <div class="text-center">
+                            <div class="text-5xl font-black gradient-text mb-2">50,000+</div>
+                            <p class="text-gray-600 font-semibold">누적 예약 건수</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-5xl font-black gradient-text mb-2">3,000+</div>
+                            <p class="text-gray-600 font-semibold">등록 병원</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-5xl font-black gradient-text mb-2">98%</div>
+                            <p class="text-gray-600 font-semibold">고객 만족도</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-5xl font-black gradient-text mb-2">24/7</div>
+                            <p class="text-gray-600 font-semibold">AI 상담 가능</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="py-32 bg-gradient-to-br from-purple-50 to-pink-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <span class="inline-block bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-bold mb-4">
+                        💎 메디케어 AI의 장점
+                    </span>
+                    <h2 class="text-5xl font-black text-gray-900 mb-6 gradient-text">
+                        왜 메디케어 AI인가?
+                    </h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Benefit 1 -->
+                    <div class="glass-card p-8 rounded-3xl card-hover">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="fas fa-bolt text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">즉시 예약</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            복잡한 전화 통화 없이 AI와 대화만으로 3분 이내 예약 완료
+                        </p>
+                    </div>
+
+                    <!-- Benefit 2 -->
+                    <div class="glass-card p-8 rounded-3xl card-hover">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="fas fa-shield-alt text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">안전한 보안</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            의료법 준수 및 개인정보 암호화로 안전하게 정보 보호
+                        </p>
+                    </div>
+
+                    <!-- Benefit 3 -->
+                    <div class="glass-card p-8 rounded-3xl card-hover">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="fas fa-chart-line text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">건강 트렌드</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            나의 건강 데이터를 분석하여 맞춤형 건강 관리 제안
+                        </p>
+                    </div>
+
+                    <!-- Benefit 4 -->
+                    <div class="glass-card p-8 rounded-3xl card-hover">
+                        <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="fas fa-bell text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">스마트 알림</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            예약일, 복약 시간을 자동으로 알려주는 지능형 알림 시스템
+                        </p>
+                    </div>
+
+                    <!-- Benefit 5 -->
+                    <div class="glass-card p-8 rounded-3xl card-hover">
+                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="fas fa-mobile-alt text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">모바일 최적화</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            언제 어디서나 스마트폰으로 간편하게 이용 가능
+                        </p>
+                    </div>
+
+                    <!-- Benefit 6 -->
+                    <div class="glass-card p-8 rounded-3xl card-hover">
+                        <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center mb-6">
+                            <i class="fas fa-headset text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">친절한 지원</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            AI가 해결하지 못하는 문제는 전문 상담사가 직접 지원
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partner Hospitals Section -->
+        <section class="py-32 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <span class="inline-block bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-bold mb-4">
+                        🏥 파트너 병원
+                    </span>
+                    <h2 class="text-5xl font-black text-gray-900 mb-6 gradient-text">
+                        신뢰할 수 있는 의료 기관
+                    </h2>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                        국내 최고 수준의 병원들과 함께합니다
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 mb-16">
+                    <div class="glass-card p-8 rounded-3xl text-center card-hover">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-hospital text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">서울대학교병원</h3>
+                        <p class="text-gray-600 mb-4">종로구 대학로 103</p>
+                        <div class="flex items-center justify-center text-yellow-500 mb-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span class="ml-2 text-gray-700 font-bold">4.8</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">내과</span>
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">외과</span>
+                            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">소아과</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 rounded-3xl text-center card-hover">
+                        <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-hospital text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">삼성서울병원</h3>
+                        <p class="text-gray-600 mb-4">강남구 일원로 81</p>
+                        <div class="flex items-center justify-center text-yellow-500 mb-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span class="ml-2 text-gray-700 font-bold">4.7</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">심장내과</span>
+                            <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-semibold">종양내과</span>
+                            <span class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-semibold">정형외과</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 rounded-3xl text-center card-hover">
+                        <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-hospital text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">아산병원</h3>
+                        <p class="text-gray-600 mb-4">송파구 올림픽로43길 88</p>
+                        <div class="flex items-center justify-center text-yellow-500 mb-4">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span class="ml-2 text-gray-700 font-bold">4.9</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">신경외과</span>
+                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">산부인과</span>
+                            <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-semibold">내과</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-gray-600 mb-6">그 외 3,000개 이상의 의료 기관과 파트너십</p>
+                    <a href="#dashboard" class="inline-block btn-primary text-white px-8 py-4 rounded-xl font-bold shadow-lg hover:scale-105 transition-transform">
+                        <i class="fas fa-search mr-2"></i>병원 찾아보기
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="py-32 gradient-bg relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-20">
+                    <span class="inline-block bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-bold mb-4 border border-white/30">
+                        💬 고객 후기
+                    </span>
+                    <h2 class="text-5xl font-black text-white mb-6">
+                        사용자들의 생생한 경험
+                    </h2>
+                    <p class="text-xl text-white/90 max-w-2xl mx-auto">
+                        메디케어 AI를 사용하는 고객들의 실제 후기입니다
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Testimonial 1 -->
+                    <div class="glass-card-dark p-8 rounded-3xl card-hover">
+                        <div class="flex items-center mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                김
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-white font-bold text-lg">김민지</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-white/90 leading-relaxed">
+                            "AI 챗봇이 정말 똑똑해요! 전화로 예약하느라 오래 기다릴 필요 없이 
+                            바로바로 예약할 수 있어서 너무 편해요. 의료 기록도 한 곳에서 볼 수 있어서 좋습니다."
+                        </p>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="glass-card-dark p-8 rounded-3xl card-hover">
+                        <div class="flex items-center mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                박
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-white font-bold text-lg">박준호</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-white/90 leading-relaxed">
+                            "처방전 관리 기능이 정말 유용해요. 약 먹을 시간마다 알림이 와서 
+                            깜빡하는 일이 없어졌어요. 가족들과도 공유할 수 있어서 부모님 약 챙기기도 편해졌습니다."
+                        </p>
+                    </div>
+
+                    <!-- Testimonial 3 -->
+                    <div class="glass-card-dark p-8 rounded-3xl card-hover">
+                        <div class="flex items-center mb-6">
+                            <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                이
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-white font-bold text-lg">이서연</h4>
+                                <div class="flex text-yellow-400">
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                    <i class="fas fa-star text-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-white/90 leading-relaxed">
+                            "음성으로도 예약할 수 있어서 정말 신기했어요! 타이핑하기 귀찮을 때 
+                            말로만 해도 알아서 예약해주니까 너무 편리합니다. 미래가 온 것 같아요."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- AI Assistant Section -->
-        <section id="services" class="py-32 gradient-bg relative overflow-hidden">
+        <section id="services" class="py-32 bg-white relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="text-center mb-20">
                     <span class="inline-block bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-bold mb-4 border border-white/30">
@@ -576,6 +865,134 @@ app.get('/', (c) => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-32 bg-gradient-to-br from-purple-50 to-pink-50">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <span class="inline-block bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-bold mb-4">
+                        ❓ 자주 묻는 질문
+                    </span>
+                    <h2 class="text-5xl font-black text-gray-900 mb-6 gradient-text">
+                        궁금하신 점이 있으신가요?
+                    </h2>
+                    <p class="text-xl text-gray-600">
+                        메디케어 AI에 대해 자주 묻는 질문들을 확인해보세요
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- FAQ 1 -->
+                    <details class="glass-card rounded-2xl p-6 cursor-pointer group">
+                        <summary class="flex justify-between items-center font-bold text-lg text-gray-900 list-none">
+                            <span class="flex items-center">
+                                <span class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white mr-4">
+                                    1
+                                </span>
+                                메디케어 AI는 무료인가요?
+                            </span>
+                            <i class="fas fa-chevron-down text-purple-600 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 pl-12 text-gray-600 leading-relaxed">
+                            네, 기본 서비스는 완전 무료입니다! 병원 예약, 의료 기록 조회, 처방전 관리 등 
+                            모든 핵심 기능을 무료로 이용하실 수 있습니다. 추가 프리미엄 기능은 별도 요금제가 있습니다.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 2 -->
+                    <details class="glass-card rounded-2xl p-6 cursor-pointer group">
+                        <summary class="flex justify-between items-center font-bold text-lg text-gray-900 list-none">
+                            <span class="flex items-center">
+                                <span class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white mr-4">
+                                    2
+                                </span>
+                                AI가 정확한 병원을 추천해주나요?
+                            </span>
+                            <i class="fas fa-chevron-down text-purple-600 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 pl-12 text-gray-600 leading-relaxed">
+                            메디케어 AI는 최신 의료 데이터와 병원 정보를 기반으로 증상에 맞는 병원과 의사를 추천합니다. 
+                            하지만 최종 진단은 의료 전문가의 판단이 필요하며, AI는 보조 도구로 활용됩니다.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 3 -->
+                    <details class="glass-card rounded-2xl p-6 cursor-pointer group">
+                        <summary class="flex justify-between items-center font-bold text-lg text-gray-900 list-none">
+                            <span class="flex items-center">
+                                <span class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white mr-4">
+                                    3
+                                </span>
+                                의료 정보가 안전하게 보호되나요?
+                            </span>
+                            <i class="fas fa-chevron-down text-purple-600 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 pl-12 text-gray-600 leading-relaxed">
+                            네, 절대적으로 안전합니다. 모든 의료 정보는 최고 수준의 암호화로 보호되며, 
+                            의료법 및 개인정보보호법을 철저히 준수합니다. 사용자의 동의 없이 절대 제3자에게 공유되지 않습니다.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 4 -->
+                    <details class="glass-card rounded-2xl p-6 cursor-pointer group">
+                        <summary class="flex justify-between items-center font-bold text-lg text-gray-900 list-none">
+                            <span class="flex items-center">
+                                <span class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white mr-4">
+                                    4
+                                </span>
+                                예약 취소나 변경도 가능한가요?
+                            </span>
+                            <i class="fas fa-chevron-down text-purple-600 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 pl-12 text-gray-600 leading-relaxed">
+                            물론입니다! 대시보드에서 언제든지 예약을 취소하거나 변경할 수 있습니다. 
+                            다만 병원별 취소 정책에 따라 취소 가능 시간이 다를 수 있으니 미리 확인해주세요.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 5 -->
+                    <details class="glass-card rounded-2xl p-6 cursor-pointer group">
+                        <summary class="flex justify-between items-center font-bold text-lg text-gray-900 list-none">
+                            <span class="flex items-center">
+                                <span class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white mr-4">
+                                    5
+                                </span>
+                                음성 예약 기능이 정확한가요?
+                            </span>
+                            <i class="fas fa-chevron-down text-purple-600 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 pl-12 text-gray-600 leading-relaxed">
+                            최신 AI 음성 인식 기술을 사용하여 높은 정확도를 자랑합니다. 
+                            자연스러운 대화로 예약할 수 있으며, 잘못 인식된 경우 바로 수정할 수 있습니다.
+                        </p>
+                    </details>
+
+                    <!-- FAQ 6 -->
+                    <details class="glass-card rounded-2xl p-6 cursor-pointer group">
+                        <summary class="flex justify-between items-center font-bold text-lg text-gray-900 list-none">
+                            <span class="flex items-center">
+                                <span class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white mr-4">
+                                    6
+                                </span>
+                                모든 병원에서 사용할 수 있나요?
+                            </span>
+                            <i class="fas fa-chevron-down text-purple-600 group-open:rotate-180 transition-transform"></i>
+                        </summary>
+                        <p class="mt-4 pl-12 text-gray-600 leading-relaxed">
+                            현재 전국 3,000개 이상의 병원과 제휴를 맺고 있으며, 지속적으로 확대하고 있습니다. 
+                            대학병원, 종합병원, 개인병원 등 다양한 의료 기관에서 이용 가능합니다.
+                        </p>
+                    </details>
+                </div>
+
+                <div class="text-center mt-12">
+                    <p class="text-gray-600 mb-6">더 궁금한 사항이 있으신가요?</p>
+                    <a href="#" class="inline-block glass-card text-purple-600 px-8 py-4 rounded-xl font-bold hover:bg-purple-50 transition border-2 border-purple-200">
+                        <i class="fas fa-headset mr-2"></i>고객센터 문의하기
+                    </a>
                 </div>
             </div>
         </section>
