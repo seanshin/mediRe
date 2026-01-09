@@ -1,5 +1,5 @@
 // Main page functionality
-console.log('메디케어 AI 홈페이지 로드 완료');
+console.log('WeRuby AI 홈페이지 로드 완료');
 
 // Smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
