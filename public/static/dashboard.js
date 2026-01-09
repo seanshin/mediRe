@@ -13,10 +13,15 @@ const CURRENT_USER_ID = currentUser?.id || 1; // Fallback to demo user
 
 // State management
 let currentTab = 'appointments';
+let currentInsuranceTab = 'policies';
 let appointments = [];
 let medicalRecords = [];
 let prescriptions = [];
 let hospitals = [];
+let insurancePolicies = [];
+let insuranceClaims = [];
+let insuranceReceipts = [];
+let insuranceStats = {};
 let chatSessionId = null;
 
 // Initialize dashboard
@@ -73,6 +78,19 @@ async function loadData() {
     const hospitalsResponse = await axios.get(`${API_BASE}/hospitals`);
     hospitals = hospitalsResponse.data.data || [];
 
+    // Load insurance data
+    const policiesResponse = await axios.get(`${API_BASE}/users/${CURRENT_USER_ID}/insurance/policies`);
+    insurancePolicies = policiesResponse.data.data || [];
+
+    const claimsResponse = await axios.get(`${API_BASE}/users/${CURRENT_USER_ID}/insurance/claims`);
+    insuranceClaims = claimsResponse.data.data || [];
+
+    const receiptsResponse = await axios.get(`${API_BASE}/users/${CURRENT_USER_ID}/insurance/receipts`);
+    insuranceReceipts = receiptsResponse.data.data || [];
+
+    const statsResponse = await axios.get(`${API_BASE}/users/${CURRENT_USER_ID}/insurance/statistics`);
+    insuranceStats = statsResponse.data.data || {};
+
     renderCurrentTab();
   } catch (error) {
     console.error('데이터 로드 실패:', error);
@@ -86,6 +104,15 @@ function updateSummaryCards() {
   document.getElementById('recordsCount').textContent = medicalRecords.length;
   document.getElementById('prescriptionsCount').textContent = prescriptions.length;
   document.getElementById('hospitalsCount').textContent = hospitals.length;
+  document.getElementById('insuranceClaimsCount').textContent = insuranceStats.pending_claims || 0;
+  
+  // Update insurance summary
+  if (document.getElementById('insurancePoliciesCount')) {
+    document.getElementById('insurancePoliciesCount').textContent = insuranceStats.active_policies || 0;
+    document.getElementById('insuranceTotalClaimed').textContent = formatCurrency(insuranceStats.total_claimed || 0);
+    document.getElementById('insuranceTotalPaid').textContent = formatCurrency(insuranceStats.total_paid || 0);
+    document.getElementById('insurancePendingCount').textContent = insuranceStats.pending_claims || 0;
+  }
 }
 
 // Setup event listeners
@@ -166,6 +193,9 @@ function renderCurrentTab() {
       break;
     case 'prescriptions':
       renderPrescriptions();
+      break;
+    case 'insurance':
+      renderInsuranceTab();
       break;
     case 'hospitals':
       renderHospitals();
@@ -527,3 +557,301 @@ window.cancelAppointment = cancelAppointment;
 window.viewHospitalDetails = viewHospitalDetails;
 window.bookHospital = bookHospital;
 window.viewDoctors = viewDoctors;
+
+// ==================== Insurance Functions ====================
+
+// Format currency
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(amount);
+}
+
+// Render insurance tab
+function renderInsuranceTab() {
+  renderInsurancePolicies();
+  renderInsuranceClaims();
+  renderInsuranceReceipts();
+  
+  // Setup insurance sub-tab switching
+  document.querySelectorAll('.insurance-sub-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.insuranceTab;
+      switchInsuranceTab(tab);
+    });
+  });
+}
+
+// Switch insurance sub-tab
+function switchInsuranceTab(tab) {
+  currentInsuranceTab = tab;
+  
+  // Update tab buttons
+  document.querySelectorAll('.insurance-sub-tab').forEach(btn => {
+    if (btn.dataset.insuranceTab === tab) {
+      btn.classList.add('text-purple-600', 'border-b-2', 'border-purple-600');
+      btn.classList.remove('text-gray-600');
+    } else {
+      btn.classList.remove('text-purple-600', 'border-b-2', 'border-purple-600');
+      btn.classList.add('text-gray-600');
+    }
+  });
+  
+  // Show/hide content
+  document.querySelectorAll('.insurance-sub-content').forEach(content => {
+    content.classList.add('hidden');
+  });
+  document.getElementById(`insurance-sub-${tab}`).classList.remove('hidden');
+}
+
+// Render insurance policies
+function renderInsurancePolicies() {
+  const container = document.getElementById('insurancePoliciesList');
+  
+  if (!insurancePolicies || insurancePolicies.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-12">
+        <i class="fas fa-shield-alt text-gray-300 text-6xl mb-4"></i>
+        <p class="text-gray-500 text-lg">가입된 보험이 없습니다</p>
+        <p class="text-gray-400 text-sm mt-2">보험을 추가하여 관리를 시작하세요</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = insurancePolicies.map(policy => `
+    <div class="glass-card rounded-2xl p-6 mb-4 card-hover">
+      <div class="flex justify-between items-start mb-4">
+        <div class="flex-1">
+          <div class="flex items-center mb-2">
+            <h3 class="text-xl font-bold text-gray-900">${policy.policy_name}</h3>
+            <span class="ml-3 px-3 py-1 rounded-full text-xs font-semibold ${
+              policy.status === 'active' ? 'bg-green-100 text-green-700' :
+              policy.status === 'expired' ? 'bg-gray-100 text-gray-700' :
+              'bg-red-100 text-red-700'
+            }">
+              ${policy.status === 'active' ? '활성' : policy.status === 'expired' ? '만료' : '취소'}
+            </span>
+          </div>
+          <p class="text-gray-600 font-semibold">${policy.insurance_company}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-500">증권번호</p>
+          <p class="text-sm font-mono font-semibold text-gray-700">${policy.policy_number}</p>
+        </div>
+      </div>
+      
+      <div class="grid md:grid-cols-4 gap-4 mb-4">
+        <div>
+          <p class="text-xs text-gray-500 mb-1">보험 종류</p>
+          <p class="font-semibold text-gray-900">${getPolicyTypeName(policy.policy_type)}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 mb-1">보장 금액</p>
+          <p class="font-semibold text-gray-900">${policy.coverage_amount ? formatCurrency(policy.coverage_amount) : '-'}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 mb-1">보험료</p>
+          <p class="font-semibold text-gray-900">${policy.premium_amount ? formatCurrency(policy.premium_amount) + '/월' : '-'}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 mb-1">보험 기간</p>
+          <p class="font-semibold text-gray-900">${policy.start_date} ~ ${policy.end_date || '평생'}</p>
+        </div>
+      </div>
+      
+      ${policy.notes ? `<p class="text-sm text-gray-600 mt-3 p-3 bg-gray-50 rounded-lg">${policy.notes}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+// Render insurance claims
+function renderInsuranceClaims() {
+  const container = document.getElementById('insuranceClaimsList');
+  
+  if (!insuranceClaims || insuranceClaims.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-12">
+        <i class="fas fa-file-invoice-dollar text-gray-300 text-6xl mb-4"></i>
+        <p class="text-gray-500 text-lg">보험 청구 내역이 없습니다</p>
+        <p class="text-gray-400 text-sm mt-2">진료 후 보험 청구를 신청하세요</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = insuranceClaims.map(claim => `
+    <div class="glass-card rounded-2xl p-6 mb-4 card-hover">
+      <div class="flex justify-between items-start mb-4">
+        <div class="flex-1">
+          <div class="flex items-center mb-2">
+            <h3 class="text-xl font-bold text-gray-900">${claim.hospital_name}</h3>
+            <span class="ml-3 px-3 py-1 rounded-full text-xs font-semibold ${getClaimStatusColor(claim.status)}">
+              ${getClaimStatusText(claim.status)}
+            </span>
+          </div>
+          <p class="text-gray-600">${claim.policy_name} · ${claim.insurance_company}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-500">청구번호</p>
+          <p class="text-sm font-mono font-semibold text-gray-700">${claim.claim_number}</p>
+        </div>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <p class="text-sm text-gray-600 mb-2"><i class="fas fa-stethoscope mr-2 text-blue-500"></i><strong>진단:</strong> ${claim.diagnosis}</p>
+          <p class="text-sm text-gray-600 mb-2"><i class="fas fa-procedures mr-2 text-green-500"></i><strong>치료:</strong> ${claim.treatment_type}</p>
+          <p class="text-sm text-gray-600"><i class="fas fa-calendar mr-2 text-purple-500"></i><strong>진료일:</strong> ${claim.treatment_date}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600 mb-2"><strong>총 진료비:</strong> ${formatCurrency(claim.total_amount)}</p>
+          <p class="text-sm text-gray-600 mb-2"><strong>청구 금액:</strong> ${formatCurrency(claim.claimed_amount)}</p>
+          ${claim.approved_amount ? `<p class="text-sm text-gray-600 mb-2"><strong>승인 금액:</strong> ${formatCurrency(claim.approved_amount)}</p>` : ''}
+          ${claim.paid_amount ? `<p class="text-sm font-bold text-green-600"><strong>지급 완료:</strong> ${formatCurrency(claim.paid_amount)}</p>` : ''}
+        </div>
+      </div>
+      
+      <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+        <div class="text-sm text-gray-500">
+          청구일: ${claim.claim_date}
+          ${claim.submission_date ? ` · 제출일: ${claim.submission_date}` : ''}
+          ${claim.approval_date ? ` · 승인일: ${claim.approval_date}` : ''}
+          ${claim.payment_date ? ` · 지급일: ${claim.payment_date}` : ''}
+        </div>
+        ${claim.status === 'pending' ? `
+          <button onclick="submitClaim(${claim.id})" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition">
+            <i class="fas fa-paper-plane mr-1"></i>보험사 제출
+          </button>
+        ` : ''}
+      </div>
+      
+      ${claim.rejection_reason ? `<div class="mt-3 p-3 bg-red-50 rounded-lg text-sm text-red-700"><strong>거절 사유:</strong> ${claim.rejection_reason}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+// Render insurance receipts
+function renderInsuranceReceipts() {
+  const container = document.getElementById('insuranceReceiptsList');
+  
+  if (!insuranceReceipts || insuranceReceipts.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-12">
+        <i class="fas fa-receipt text-gray-300 text-6xl mb-4"></i>
+        <p class="text-gray-500 text-lg">등록된 영수증이 없습니다</p>
+        <p class="text-gray-400 text-sm mt-2">진료비 영수증을 추가하세요</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = insuranceReceipts.map(receipt => `
+    <div class="glass-card rounded-2xl p-6 mb-4 card-hover">
+      <div class="flex justify-between items-start">
+        <div class="flex-1">
+          <div class="flex items-center mb-2">
+            <h3 class="text-lg font-bold text-gray-900">${receipt.hospital_name}</h3>
+            ${receipt.is_claimed ? 
+              '<span class="ml-3 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700"><i class="fas fa-check mr-1"></i>청구 완료</span>' :
+              '<span class="ml-3 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">미청구</span>'
+            }
+          </div>
+          <p class="text-gray-600">${receipt.treatment_type}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-2xl font-black gradient-text">${formatCurrency(receipt.amount)}</p>
+          <p class="text-xs text-gray-500">${receipt.receipt_date}</p>
+        </div>
+      </div>
+      
+      <div class="mt-4 flex items-center justify-between text-sm">
+        <div>
+          <span class="text-gray-500">영수증 번호:</span>
+          <span class="font-mono font-semibold text-gray-700 ml-2">${receipt.receipt_number}</span>
+          <span class="text-gray-500 ml-4">결제:</span>
+          <span class="font-semibold text-gray-700 ml-2">${getPaymentMethodText(receipt.payment_method)}</span>
+        </div>
+        ${!receipt.is_claimed ? `
+          <button onclick="createClaimFromReceipt(${receipt.id})" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition">
+            <i class="fas fa-file-invoice mr-1"></i>보험 청구하기
+          </button>
+        ` : ''}
+      </div>
+      
+      ${receipt.notes ? `<p class="text-sm text-gray-600 mt-3 p-3 bg-gray-50 rounded-lg">${receipt.notes}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+// Helper functions
+function getPolicyTypeName(type) {
+  const types = {
+    'medical': '실손의료보험',
+    'dental': '치과보험',
+    'vision': '안과보험',
+    'long_term_care': '장기요양보험',
+    'critical_illness': '중대질병보험',
+    'accident': '상해보험'
+  };
+  return types[type] || type;
+}
+
+function getClaimStatusColor(status) {
+  const colors = {
+    'pending': 'bg-gray-100 text-gray-700',
+    'submitted': 'bg-blue-100 text-blue-700',
+    'under_review': 'bg-yellow-100 text-yellow-700',
+    'approved': 'bg-green-100 text-green-700',
+    'rejected': 'bg-red-100 text-red-700',
+    'paid': 'bg-purple-100 text-purple-700'
+  };
+  return colors[status] || 'bg-gray-100 text-gray-700';
+}
+
+function getClaimStatusText(status) {
+  const texts = {
+    'pending': '대기 중',
+    'submitted': '제출 완료',
+    'under_review': '심사 중',
+    'approved': '승인 완료',
+    'rejected': '거절됨',
+    'paid': '지급 완료'
+  };
+  return texts[status] || status;
+}
+
+function getPaymentMethodText(method) {
+  const methods = {
+    'card': '카드',
+    'cash': '현금',
+    'transfer': '계좌이체',
+    'insurance': '보험'
+  };
+  return methods[method] || method;
+}
+
+// Submit claim to insurance company
+async function submitClaim(claimId) {
+  if (!confirm('이 청구 건을 보험사에 제출하시겠습니까?')) return;
+  
+  try {
+    await axios.put(`${API_BASE}/insurance/claims/${claimId}`, {
+      status: 'submitted'
+    });
+    alert('보험사에 청구가 제출되었습니다.');
+    await loadData();
+    renderInsuranceClaims();
+    updateSummaryCards();
+  } catch (error) {
+    console.error('청구 제출 실패:', error);
+    alert('청구 제출 중 오류가 발생했습니다.');
+  }
+}
+
+// Create claim from receipt
+async function createClaimFromReceipt(receiptId) {
+  alert('영수증 기반 보험 청구 기능은 개발 중입니다.');
+}
+
+// Make insurance functions globally accessible
+window.submitClaim = submitClaim;
+window.createClaimFromReceipt = createClaimFromReceipt;

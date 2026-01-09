@@ -3125,7 +3125,7 @@ app.get('/dashboard', (c) => {
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-28">
             <!-- Summary Cards -->
-            <div class="grid md:grid-cols-4 gap-6 mb-8">
+            <div class="grid md:grid-cols-5 gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-6 card-hover border-gradient">
                     <div class="flex items-center justify-between">
                         <div>
@@ -3177,6 +3177,22 @@ app.get('/dashboard', (c) => {
                 <div class="glass-card rounded-2xl p-6 card-hover border-gradient">
                     <div class="flex items-center justify-between">
                         <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">보험 청구</p>
+                            <p class="text-4xl font-black gradient-text" id="insuranceClaimsCount">0</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-4 rounded-2xl shadow-lg">
+                            <i class="fas fa-shield-alt text-white text-3xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="text-indigo-600 font-semibold"><i class="fas fa-hourglass-half mr-1"></i>처리 중</span>
+                        <span class="text-gray-500 ml-2">건</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 card-hover border-gradient">
+                    <div class="flex items-center justify-between">
+                        <div>
                             <p class="text-gray-600 text-sm font-semibold mb-2">등록 병원</p>
                             <p class="text-4xl font-black gradient-text" id="hospitalsCount">0</p>
                         </div>
@@ -3194,7 +3210,7 @@ app.get('/dashboard', (c) => {
             <!-- Main Content Tabs -->
             <div class="glass-card rounded-3xl shadow-2xl overflow-hidden">
                 <div class="border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                    <nav class="flex">
+                    <nav class="flex overflow-x-auto">
                         <button class="tab-btn px-8 py-5 font-bold text-purple-600 border-b-4 border-purple-600 bg-white/50" data-tab="appointments">
                             <i class="fas fa-calendar-alt mr-2"></i>예약 관리
                         </button>
@@ -3203,6 +3219,9 @@ app.get('/dashboard', (c) => {
                         </button>
                         <button class="tab-btn px-8 py-5 font-bold text-gray-600 hover:text-purple-600 hover:bg-white/30 transition" data-tab="prescriptions">
                             <i class="fas fa-prescription mr-2"></i>처방전
+                        </button>
+                        <button class="tab-btn px-8 py-5 font-bold text-gray-600 hover:text-purple-600 hover:bg-white/30 transition" data-tab="insurance">
+                            <i class="fas fa-shield-alt mr-2"></i>보험
                         </button>
                         <button class="tab-btn px-8 py-5 font-bold text-gray-600 hover:text-purple-600 hover:bg-white/30 transition" data-tab="hospitals">
                             <i class="fas fa-hospital-alt mr-2"></i>병원 찾기
@@ -3241,6 +3260,98 @@ app.get('/dashboard', (c) => {
                             <p class="text-gray-600">약물 복용 정보를 확인하세요</p>
                         </div>
                         <div id="prescriptionsList"></div>
+                    </div>
+
+                    <!-- Insurance Tab -->
+                    <div id="tab-insurance" class="tab-content hidden">
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-black gradient-text mb-2">보험 관리</h2>
+                            <p class="text-gray-600">가입 보험과 청구 내역을 관리하세요</p>
+                        </div>
+
+                        <!-- Insurance Summary -->
+                        <div class="grid md:grid-cols-4 gap-6 mb-8">
+                            <div class="glass-card rounded-xl p-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-gray-600 text-sm font-semibold">가입 보험</span>
+                                    <i class="fas fa-shield-alt text-blue-500"></i>
+                                </div>
+                                <p class="text-3xl font-black text-gray-900" id="insurancePoliciesCount">0</p>
+                                <p class="text-xs text-gray-500 mt-2">활성 보험</p>
+                            </div>
+                            <div class="glass-card rounded-xl p-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-gray-600 text-sm font-semibold">총 청구액</span>
+                                    <i class="fas fa-receipt text-green-500"></i>
+                                </div>
+                                <p class="text-3xl font-black text-gray-900" id="insuranceTotalClaimed">0원</p>
+                                <p class="text-xs text-gray-500 mt-2">누적 청구</p>
+                            </div>
+                            <div class="glass-card rounded-xl p-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-gray-600 text-sm font-semibold">지급 완료</span>
+                                    <i class="fas fa-check-circle text-purple-500"></i>
+                                </div>
+                                <p class="text-3xl font-black text-gray-900" id="insuranceTotalPaid">0원</p>
+                                <p class="text-xs text-gray-500 mt-2">받은 금액</p>
+                            </div>
+                            <div class="glass-card rounded-xl p-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-gray-600 text-sm font-semibold">처리 중</span>
+                                    <i class="fas fa-hourglass-half text-orange-500"></i>
+                                </div>
+                                <p class="text-3xl font-black text-gray-900" id="insurancePendingCount">0건</p>
+                                <p class="text-xs text-gray-500 mt-2">심사 진행</p>
+                            </div>
+                        </div>
+
+                        <!-- Insurance Tabs -->
+                        <div class="mb-6">
+                            <div class="flex space-x-4 border-b border-gray-200">
+                                <button class="insurance-sub-tab px-6 py-3 font-bold text-purple-600 border-b-2 border-purple-600" data-insurance-tab="policies">
+                                    <i class="fas fa-file-contract mr-2"></i>가입 보험
+                                </button>
+                                <button class="insurance-sub-tab px-6 py-3 font-semibold text-gray-600 hover:text-purple-600 transition" data-insurance-tab="claims">
+                                    <i class="fas fa-file-invoice-dollar mr-2"></i>청구 내역
+                                </button>
+                                <button class="insurance-sub-tab px-6 py-3 font-semibold text-gray-600 hover:text-purple-600 transition" data-insurance-tab="receipts">
+                                    <i class="fas fa-receipt mr-2"></i>영수증 관리
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Policies Sub-tab -->
+                        <div id="insurance-sub-policies" class="insurance-sub-content">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold text-gray-900">가입 보험 목록</h3>
+                                <button id="addPolicyBtn" class="btn-primary text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform">
+                                    <i class="fas fa-plus mr-2"></i>보험 추가
+                                </button>
+                            </div>
+                            <div id="insurancePoliciesList"></div>
+                        </div>
+
+                        <!-- Claims Sub-tab -->
+                        <div id="insurance-sub-claims" class="insurance-sub-content hidden">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold text-gray-900">보험 청구 내역</h3>
+                                <button id="addClaimBtn" class="btn-primary text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform">
+                                    <i class="fas fa-plus mr-2"></i>청구 신청
+                                </button>
+                            </div>
+                            <div id="insuranceClaimsList"></div>
+                        </div>
+
+                        <!-- Receipts Sub-tab -->
+                        <div id="insurance-sub-receipts" class="insurance-sub-content hidden">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold text-gray-900">의료비 영수증</h3>
+                                <button id="addReceiptBtn" class="btn-primary text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform">
+                                    <i class="fas fa-plus mr-2"></i>영수증 추가
+                                </button>
+                            </div>
+                            <div id="insuranceReceiptsList"></div>
+                        </div>
                     </div>
 
                     <!-- Hospitals Tab -->
