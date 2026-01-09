@@ -840,9 +840,9 @@ app.get('/', (c) => {
                     </div>
 
                     <!-- Use Case Scenarios -->
-                    <div class="max-w-6xl mx-auto mt-20">
+                    <div class="max-w-6xl mx-auto mt-8">
                         <!-- Main Scenarios -->
-                        <div class="grid md:grid-cols-3 gap-6 mb-8">
+                        <div class="grid md:grid-cols-3 gap-4 mb-4">
                             <!-- Scenario 1 -->
                             <div class="glass-card-dark p-6 rounded-2xl card-hover fade-in-delay-3">
                                 <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
@@ -893,7 +893,7 @@ app.get('/', (c) => {
                         </div>
 
                         <!-- Additional Scenarios -->
-                        <div class="grid md:grid-cols-3 gap-6 mb-8">
+                        <div class="grid md:grid-cols-3 gap-4 mb-6">
                             <!-- Scenario 4 -->
                             <div class="glass-card-dark p-6 rounded-2xl card-hover fade-in-delay-3" style="animation-delay: 0.6s">
                                 <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
@@ -944,7 +944,7 @@ app.get('/', (c) => {
                         </div>
 
                         <!-- Marketing Message & Stats -->
-                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="grid md:grid-cols-2 gap-4 mb-4">
                             <!-- Live Activity Box -->
                             <div class="glass-card-dark p-8 rounded-3xl fade-in-delay-3" style="animation-delay: 1.2s">
                                 <div class="flex items-center justify-center gap-4 mb-6">
