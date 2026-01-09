@@ -1257,6 +1257,10 @@ app.get('/', (c) => {
                     <div class="hidden md:flex space-x-6 items-center">
                         <a href="/" class="text-purple-600 font-bold border-b-2 border-purple-600">서비스 컨셉</a>
                         <a href="/about" class="text-gray-700 hover:text-purple-600 font-semibold transition">소개</a>
+                        <a href="https://weruby.co.kr" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-purple-600 font-semibold transition">
+                            <i class="fas fa-building mr-1"></i>서비스 제공업체
+                            <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                        </a>
                         <a href="/login" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
                             <i class="fas fa-sign-in-alt mr-2"></i>로그인
                         </a>
@@ -1991,6 +1995,10 @@ app.get('/about', (c) => {
                         <a href="/" class="text-gray-700 hover:text-purple-600 font-semibold transition">서비스 컨셉</a>
                         <a href="/about" class="text-purple-600 font-bold border-b-2 border-purple-600">소개</a>
                         <a href="#features" class="text-gray-700 hover:text-purple-600 font-semibold transition">기능소개</a>
+                        <a href="https://weruby.co.kr" target="_blank" rel="noopener noreferrer" class="text-gray-700 hover:text-purple-600 font-semibold transition">
+                            <i class="fas fa-building mr-1"></i>서비스 제공업체
+                            <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                        </a>
                         <a href="/login" class="glass-card text-gray-700 px-4 py-2 rounded-xl font-semibold hover:bg-purple-50 transition">
                             <i class="fas fa-sign-in-alt mr-2"></i>로그인
                         </a>
@@ -3457,6 +3465,10 @@ app.get('/dashboard', (c) => {
                         <button id="aiChatBtn" class="btn-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg glow hover:scale-105 transition-transform">
                             <i class="fas fa-robot mr-2"></i>AI 어시스턴트
                         </button>
+                        <a href="https://weruby.co.kr" target="_blank" rel="noopener noreferrer" class="glass-card px-4 py-2 rounded-xl text-gray-700 font-semibold hover:bg-purple-50 transition">
+                            <i class="fas fa-building mr-2"></i>서비스 제공업체
+                            <i class="fas fa-external-link-alt text-xs ml-1"></i>
+                        </a>
                         <a href="/admin/users" class="glass-card px-4 py-2 rounded-xl text-gray-700 font-semibold hover:bg-purple-50 transition">
                             <i class="fas fa-users-cog mr-2"></i>관리
                         </a>
