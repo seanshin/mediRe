@@ -218,10 +218,26 @@ npm run test                     # 서버 연결 테스트
 
 ## 🎨 디자인 시스템
 
-- **색상**: Purple/Blue 그라디언트
+- **색상**: Purple/Blue/Pink 그라디언트
 - **아이콘**: Font Awesome 6
-- **스타일**: TailwindCSS
-- **애니메이션**: CSS transitions
+- **스타일**: TailwindCSS + Custom CSS
+- **글꼴**: Inter (Google Fonts)
+- **애니메이션**: 
+  - CSS transitions & keyframe animations
+  - Fade-in, Scale-in, Float animations
+  - Gradient shift, Shimmer, Glow effects
+  - Particle background effects
+  - Icon pulse animations
+- **디자인 특징**:
+  - Glass Morphism (유리 느낌 효과)
+  - Glassmorphism cards with backdrop blur
+  - Gradient borders and backgrounds
+  - Neon text effects
+  - 3D hover transformations
+  - Ripple effects on clicks
+  - Smooth scroll animations
+  - Loading spinners
+  - Badge glow effects
 
 ## 📄 라이선스
 
