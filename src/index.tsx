@@ -1266,23 +1266,23 @@ app.get('/', (c) => {
         </section>
 
         <!-- AI Assistant Section -->
-        <section id="services" class="py-32 bg-white relative overflow-hidden">
+        <section id="services" class="py-32 relative overflow-hidden bg-gradient-to-br from-gray-50 to-purple-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="text-center mb-20">
-                    <span class="inline-block bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-bold mb-4 border border-white/30">
+                    <span class="inline-block bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-bold mb-4">
                         🤖 AI 어시스턴트
                     </span>
-                    <h2 class="text-5xl font-black text-white mb-6">
+                    <h2 class="text-5xl font-black text-gray-900 mb-6 gradient-text">
                         24/7 똑똑한 의료 비서
                     </h2>
-                    <p class="text-xl text-white/90 max-w-2xl mx-auto">
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
                         음성과 채팅으로 모든 의료 서비스를 편리하게 이용하세요
                     </p>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div class="space-y-6">
-                        <div class="glass-card-dark p-8 rounded-3xl card-hover">
+                        <div class="glass-card p-8 rounded-3xl card-hover border-gradient">
                             <div class="flex items-start gap-6">
                                 <div class="flex-shrink-0">
                                     <div class="bg-gradient-to-br from-blue-400 to-blue-600 p-4 rounded-2xl shadow-lg">
@@ -1290,8 +1290,8 @@ app.get('/', (c) => {
                                     </div>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-2xl font-bold text-white mb-3">음성 예약</h3>
-                                    <p class="text-white/80 leading-relaxed">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">음성 예약</h3>
+                                    <p class="text-gray-600 leading-relaxed">
                                         "다음주 화요일 오전에 내과 예약해줘" - 자연스러운 대화로 
                                         예약을 완료하세요.
                                     </p>
@@ -1299,7 +1299,7 @@ app.get('/', (c) => {
                             </div>
                         </div>
 
-                        <div class="glass-card-dark p-8 rounded-3xl card-hover">
+                        <div class="glass-card p-8 rounded-3xl card-hover border-gradient">
                             <div class="flex items-start gap-6">
                                 <div class="flex-shrink-0">
                                     <div class="bg-gradient-to-br from-green-400 to-emerald-600 p-4 rounded-2xl shadow-lg">
@@ -1307,8 +1307,8 @@ app.get('/', (c) => {
                                     </div>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-2xl font-bold text-white mb-3">채팅 상담</h3>
-                                    <p class="text-white/80 leading-relaxed">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">채팅 상담</h3>
+                                    <p class="text-gray-600 leading-relaxed">
                                         증상을 설명하면 AI가 적합한 진료과와 병원을 
                                         추천해드립니다.
                                     </p>
@@ -1316,7 +1316,7 @@ app.get('/', (c) => {
                             </div>
                         </div>
 
-                        <div class="glass-card-dark p-8 rounded-3xl card-hover">
+                        <div class="glass-card p-8 rounded-3xl card-hover border-gradient">
                             <div class="flex items-start gap-6">
                                 <div class="flex-shrink-0">
                                     <div class="bg-gradient-to-br from-purple-400 to-pink-600 p-4 rounded-2xl shadow-lg">
@@ -1324,8 +1324,8 @@ app.get('/', (c) => {
                                     </div>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-2xl font-bold text-white mb-3">24/7 지원</h3>
-                                    <p class="text-white/80 leading-relaxed">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">24/7 지원</h3>
+                                    <p class="text-gray-600 leading-relaxed">
                                         언제든지 AI 어시스턴트가 예약, 조회, 관리를 
                                         도와드립니다.
                                     </p>
