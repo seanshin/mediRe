@@ -434,7 +434,7 @@ app.get('/register', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>회원가입 - 메디케어 AI</title>
+        <title>회원가입 - WeRuby AI</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
@@ -447,10 +447,10 @@ app.get('/register', (c) => {
                         <div class="bg-white p-3 rounded-xl shadow-lg">
                             <i class="fas fa-heartbeat text-purple-600 text-3xl"></i>
                         </div>
-                        <span class="font-black text-3xl text-white">메디케어 AI</span>
+                        <span class="font-black text-3xl text-white">WeRuby AI</span>
                     </a>
                     <h2 class="text-4xl font-black text-white mb-2">회원가입</h2>
-                    <p class="text-white/80 text-lg">메디케어 AI와 함께 건강을 관리하세요</p>
+                    <p class="text-white/80 text-lg">WeRuby AI와 함께 건강을 관리하세요</p>
                 </div>
 
                 <div class="glass-card rounded-3xl p-8 shadow-2xl">
@@ -637,7 +637,7 @@ app.get('/login', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>로그인 - 메디케어 AI</title>
+        <title>로그인 - WeRuby AI</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
@@ -650,7 +650,7 @@ app.get('/login', (c) => {
                         <div class="bg-white p-3 rounded-xl shadow-lg">
                             <i class="fas fa-heartbeat text-purple-600 text-3xl"></i>
                         </div>
-                        <span class="font-black text-3xl text-white">메디케어 AI</span>
+                        <span class="font-black text-3xl text-white">WeRuby AI</span>
                     </a>
                     <h2 class="text-4xl font-black text-white mb-2">로그인</h2>
                     <p class="text-white/80 text-lg">계정에 로그인하세요</p>
@@ -748,7 +748,7 @@ app.get('/', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>메디케어 AI - 스마트 병원 예약 플랫폼</title>
+        <title>WeRuby AI - 스마트 병원 예약 플랫폼</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
@@ -765,7 +765,7 @@ app.get('/', (c) => {
                         <div class="icon-pulse bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-xl shadow-lg">
                             <i class="fas fa-heartbeat text-white text-2xl"></i>
                         </div>
-                        <span class="font-black text-2xl gradient-text">메디케어 AI</span>
+                        <span class="font-black text-2xl gradient-text">WeRuby AI</span>
                     </div>
                     <div class="hidden md:flex space-x-6 items-center">
                         <a href="#features" class="text-gray-700 hover:text-purple-600 font-semibold transition">기능소개</a>
@@ -880,7 +880,7 @@ app.get('/', (c) => {
                                 <i class="fas fa-lightbulb text-yellow-300 mr-2"></i>
                                 실제 사용 시나리오
                             </h2>
-                            <p class="text-white/80 text-lg">메디케어 AI는 이렇게 당신을 도와드립니다</p>
+                            <p class="text-white/80 text-lg">WeRuby AI는 이렇게 당신을 도와드립니다</p>
                         </div>
                         <!-- Main Scenarios -->
                         <div class="grid md:grid-cols-3 gap-4 mb-4">
@@ -997,7 +997,7 @@ app.get('/', (c) => {
                                     <span class="text-green-300">1,234명</span>의 사용자가
                                 </p>
                                 <p class="text-xl md:text-2xl font-bold text-white/90 mb-6 text-center">
-                                    메디케어 AI로 병원 예약 중
+                                    WeRuby AI로 병원 예약 중
                                 </p>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="bg-white/10 rounded-xl p-3 text-center">
@@ -1071,7 +1071,7 @@ app.get('/', (c) => {
                         <div class="glass-card-dark p-8 rounded-3xl text-center fade-in-delay-3" style="animation-delay: 2s">
                             <h3 class="text-2xl font-black text-white mb-6">
                                 <i class="fas fa-award text-yellow-300 mr-2"></i>
-                                메디케어 AI를 선택해야 하는 이유
+                                WeRuby AI를 선택해야 하는 이유
                             </h3>
                             <div class="grid md:grid-cols-3 gap-6">
                                 <div class="text-left">
@@ -1122,7 +1122,7 @@ app.get('/', (c) => {
                         ✨ 주요 기능
                     </span>
                     <h2 class="text-5xl font-black text-gray-900 mb-6 gradient-text">
-                        메디케어 AI의 특별함
+                        WeRuby AI의 특별함
                     </h2>
                     <p class="text-xl text-gray-600 max-w-2xl mx-auto">
                         최첨단 AI 기술로 더 편리하고 스마트한 의료 서비스를 경험하세요
@@ -1234,10 +1234,10 @@ app.get('/', (c) => {
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20">
                     <span class="inline-block bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-bold mb-4">
-                        💎 메디케어 AI의 장점
+                        💎 WeRuby AI의 장점
                     </span>
                     <h2 class="text-5xl font-black text-gray-900 mb-6 gradient-text">
-                        왜 메디케어 AI인가?
+                        왜 WeRuby AI인가?
                     </h2>
                 </div>
 
@@ -1411,7 +1411,7 @@ app.get('/', (c) => {
                         사용자들의 생생한 경험
                     </h2>
                     <p class="text-xl text-white/90 max-w-2xl mx-auto">
-                        메디케어 AI를 사용하는 고객들의 실제 후기입니다
+                        WeRuby AI를 사용하는 고객들의 실제 후기입니다
                     </p>
                 </div>
 
@@ -1591,7 +1591,7 @@ app.get('/', (c) => {
                         궁금하신 점이 있으신가요?
                     </h2>
                     <p class="text-xl text-gray-600">
-                        메디케어 AI에 대해 자주 묻는 질문들을 확인해보세요
+                        WeRuby AI에 대해 자주 묻는 질문들을 확인해보세요
                     </p>
                 </div>
 
@@ -1603,7 +1603,7 @@ app.get('/', (c) => {
                                 <span class="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center text-white mr-4">
                                     1
                                 </span>
-                                메디케어 AI는 무료인가요?
+                                WeRuby AI는 무료인가요?
                             </span>
                             <i class="fas fa-chevron-down text-purple-600 group-open:rotate-180 transition-transform"></i>
                         </summary>
@@ -1625,7 +1625,7 @@ app.get('/', (c) => {
                             <i class="fas fa-chevron-down text-purple-600 group-open:rotate-180 transition-transform"></i>
                         </summary>
                         <p class="mt-4 pl-12 text-gray-600 leading-relaxed">
-                            메디케어 AI는 최신 의료 데이터와 병원 정보를 기반으로 증상에 맞는 병원과 의사를 추천합니다. 
+                            WeRuby AI는 최신 의료 데이터와 병원 정보를 기반으로 증상에 맞는 병원과 의사를 추천합니다. 
                             하지만 최종 진단은 의료 전문가의 판단이 필요하며, AI는 보조 도구로 활용됩니다.
                         </p>
                     </details>
@@ -1736,7 +1736,7 @@ app.get('/', (c) => {
                         <h3 class="text-2xl font-bold text-gray-900 mb-4">회원가입</h3>
                         <p class="text-gray-600 leading-relaxed">
                             간단한 정보 입력으로<br>
-                            메디케어 AI 서비스를<br>
+                            WeRuby AI 서비스를<br>
                             바로 시작하세요
                         </p>
                     </div>
@@ -1792,7 +1792,7 @@ app.get('/', (c) => {
                         지금 바로 시작하세요
                     </h2>
                     <p class="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed">
-                        메디케어 AI와 함께<br class="md:hidden">
+                        WeRuby AI와 함께<br class="md:hidden">
                         더 스마트하고 편리한<br class="md:hidden">
                         의료 서비스를 경험하세요
                     </p>
@@ -1817,7 +1817,7 @@ app.get('/', (c) => {
                             <div class="bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-xl">
                                 <i class="fas fa-heartbeat text-white text-2xl"></i>
                             </div>
-                            <span class="font-black text-2xl">메디케어 AI</span>
+                            <span class="font-black text-2xl">WeRuby AI</span>
                         </div>
                         <p class="text-gray-400 leading-relaxed mb-6">
                             AI 기술로 더 편리하고 스마트한 병원 예약과<br>
@@ -1859,7 +1859,7 @@ app.get('/', (c) => {
                 </div>
                 <div class="border-t border-gray-800 pt-8 text-center">
                     <p class="text-gray-400">
-                        &copy; 2026 메디케어 AI. All rights reserved. Made with <i class="fas fa-heart text-red-500"></i> in Korea
+                        &copy; 2026 WeRuby AI. All rights reserved. Made with <i class="fas fa-heart text-red-500"></i> in Korea
                     </p>
                 </div>
             </div>
@@ -1935,7 +1935,7 @@ app.get('/admin/users', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>사용자 관리 - 메디케어 AI</title>
+        <title>사용자 관리 - WeRuby AI</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
@@ -1949,7 +1949,7 @@ app.get('/admin/users', (c) => {
                         <div class="bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-xl shadow-lg">
                             <i class="fas fa-heartbeat text-white text-2xl"></i>
                         </div>
-                        <span class="font-black text-2xl gradient-text">메디케어 AI</span>
+                        <span class="font-black text-2xl gradient-text">WeRuby AI</span>
                         <span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">ADMIN</span>
                     </div>
                     <div class="flex items-center space-x-4">
@@ -2216,7 +2216,7 @@ app.get('/dashboard', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>대시보드 - 메디케어 AI</title>
+        <title>대시보드 - WeRuby AI</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/styles.css" rel="stylesheet">
@@ -2230,7 +2230,7 @@ app.get('/dashboard', (c) => {
                         <div class="bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-xl shadow-lg">
                             <i class="fas fa-heartbeat text-white text-2xl"></i>
                         </div>
-                        <span class="font-black text-2xl gradient-text">메디케어 AI</span>
+                        <span class="font-black text-2xl gradient-text">WeRuby AI</span>
                     </div>
                     <div class="flex items-center space-x-4">
                         <button id="aiChatBtn" class="btn-primary text-white px-6 py-3 rounded-xl font-bold shadow-lg glow hover:scale-105 transition-transform">
@@ -2419,7 +2419,7 @@ app.get('/dashboard', (c) => {
                         </div>
                         <div class="glass-card rounded-2xl shadow-lg p-5 max-w-md">
                             <p class="text-gray-800 leading-relaxed">
-                                안녕하세요! 저는 메디케어 AI 어시스턴트입니다. 
+                                안녕하세요! 저는 WeRuby AI 어시스턴트입니다. 
                                 <strong>병원 예약, 의료 기록 조회, 처방전 관리</strong> 등을 도와드릴 수 있습니다. 
                                 무엇을 도와드릴까요? 😊
                             </p>
