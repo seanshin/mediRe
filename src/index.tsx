@@ -274,6 +274,211 @@ app.get('/api/chat/sessions/:sessionId/messages', async (c) => {
   return c.json({ success: true, data: result.results })
 })
 
+// ==================== Health Status API Routes ====================
+
+// Get user health status
+app.get('/api/users/:userId/health/status', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  
+  const result = await DB.prepare(`
+    SELECT * FROM health_status WHERE user_id = ? ORDER BY status_date DESC LIMIT 1
+  `).bind(userId).all()
+  
+  return c.json({ success: true, data: result.results[0] || null })
+})
+
+// Get health status history
+app.get('/api/users/:userId/health/history', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  const limit = c.req.query('limit') || '30'
+  
+  const result = await DB.prepare(`
+    SELECT * FROM health_status WHERE user_id = ? ORDER BY status_date DESC LIMIT ?
+  `).bind(userId, parseInt(limit)).all()
+  
+  return c.json({ success: true, data: result.results })
+})
+
+// Get health trends
+app.get('/api/users/:userId/health/trends', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  const metricName = c.req.query('metric')
+  const limit = c.req.query('limit') || '30'
+  
+  let query = 'SELECT * FROM health_trends WHERE user_id = ?'
+  let params: any[] = [userId]
+  
+  if (metricName) {
+    query += ' AND metric_name = ?'
+    params.push(metricName)
+  }
+  
+  query += ' ORDER BY recorded_date DESC LIMIT ?'
+  params.push(parseInt(limit))
+  
+  const result = await DB.prepare(query).bind(...params).all()
+  return c.json({ success: true, data: result.results })
+})
+
+// Get health goals
+app.get('/api/users/:userId/health/goals', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  const status = c.req.query('status')
+  
+  let query = 'SELECT * FROM health_goals WHERE user_id = ?'
+  let params: any[] = [userId]
+  
+  if (status) {
+    query += ' AND status = ?'
+    params.push(status)
+  }
+  
+  query += ' ORDER BY created_at DESC'
+  
+  const result = await DB.prepare(query).bind(...params).all()
+  return c.json({ success: true, data: result.results })
+})
+
+// Create health goal
+app.post('/api/health/goals', async (c) => {
+  const { DB } = c.env
+  const body = await c.req.json()
+  
+  const result = await DB.prepare(`
+    INSERT INTO health_goals (user_id, goal_type, goal_title, goal_description, target_value, current_value, start_date, target_date, status, progress_percentage)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(
+    body.user_id,
+    body.goal_type,
+    body.goal_title,
+    body.goal_description || null,
+    body.target_value,
+    body.current_value || null,
+    body.start_date,
+    body.target_date || null,
+    body.status || 'active',
+    body.progress_percentage || 0
+  ).run()
+  
+  return c.json({ success: true, data: { id: result.meta.last_row_id } })
+})
+
+// Update health goal
+app.put('/api/health/goals/:id', async (c) => {
+  const { DB } = c.env
+  const id = c.req.param('id')
+  const body = await c.req.json()
+  
+  const updates: string[] = []
+  const params: any[] = []
+  
+  if (body.current_value !== undefined) {
+    updates.push('current_value = ?')
+    params.push(body.current_value)
+  }
+  if (body.progress_percentage !== undefined) {
+    updates.push('progress_percentage = ?')
+    params.push(body.progress_percentage)
+  }
+  if (body.status !== undefined) {
+    updates.push('status = ?')
+    params.push(body.status)
+  }
+  if (body.notes !== undefined) {
+    updates.push('notes = ?')
+    params.push(body.notes)
+  }
+  
+  updates.push('updated_at = CURRENT_TIMESTAMP')
+  params.push(id)
+  
+  await DB.prepare(`UPDATE health_goals SET ${updates.join(', ')} WHERE id = ?`).bind(...params).run()
+  
+  return c.json({ success: true, message: '건강 목표가 업데이트되었습니다.' })
+})
+
+// Get health alerts
+app.get('/api/users/:userId/health/alerts', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  const unreadOnly = c.req.query('unread') === 'true'
+  const unresolvedOnly = c.req.query('unresolved') === 'true'
+  
+  let query = 'SELECT * FROM health_alerts WHERE user_id = ?'
+  let params: any[] = [userId]
+  
+  if (unreadOnly) {
+    query += ' AND is_read = FALSE'
+  }
+  if (unresolvedOnly) {
+    query += ' AND is_resolved = FALSE'
+  }
+  
+  query += ' ORDER BY priority DESC, created_at DESC'
+  
+  const result = await DB.prepare(query).bind(...params).all()
+  return c.json({ success: true, data: result.results })
+})
+
+// Mark alert as read
+app.put('/api/health/alerts/:id/read', async (c) => {
+  const { DB } = c.env
+  const id = c.req.param('id')
+  
+  await DB.prepare('UPDATE health_alerts SET is_read = TRUE WHERE id = ?').bind(id).run()
+  
+  return c.json({ success: true })
+})
+
+// Get health dashboard summary
+app.get('/api/users/:userId/health/dashboard', async (c) => {
+  const { DB } = c.env
+  const userId = c.req.param('userId')
+  
+  // Get latest health status
+  const statusResult = await DB.prepare(`
+    SELECT * FROM health_status WHERE user_id = ? ORDER BY status_date DESC LIMIT 1
+  `).bind(userId).all()
+  
+  const healthStatus = statusResult.results[0] || null
+  
+  // Get active goals count
+  const goalsResult = await DB.prepare(`
+    SELECT COUNT(*) as count FROM health_goals WHERE user_id = ? AND status = 'active'
+  `).bind(userId).all()
+  
+  const activeGoalsCount = goalsResult.results[0]?.count || 0
+  
+  // Get unread alerts count
+  const alertsResult = await DB.prepare(`
+    SELECT COUNT(*) as count FROM health_alerts WHERE user_id = ? AND is_read = FALSE
+  `).bind(userId).all()
+  
+  const unreadAlertsCount = alertsResult.results[0]?.count || 0
+  
+  // Get recent medical visits count (last 30 days)
+  const visitsResult = await DB.prepare(`
+    SELECT COUNT(*) as count FROM medical_records 
+    WHERE user_id = ? AND visit_date >= date('now', '-30 days')
+  `).bind(userId).all()
+  
+  const recentVisitsCount = visitsResult.results[0]?.count || 0
+  
+  return c.json({
+    success: true,
+    data: {
+      healthStatus,
+      activeGoalsCount,
+      unreadAlertsCount,
+      recentVisitsCount
+    }
+  })
+})
+
 // ==================== Insurance API Routes ====================
 
 // Get user insurance policies
@@ -1439,6 +1644,157 @@ app.get('/', (c) => {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Step 9: Health Status Monitoring -->
+                    <div class="max-w-5xl mx-auto mt-16">
+                        <div class="glass-card p-10 rounded-3xl border-gradient bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+                            <div class="flex items-start gap-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center animate-pulse">
+                                        <i class="fas fa-heartbeat text-white text-2xl"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-3">
+                                        <span class="gradient-text">지능형 건강상태 모니터링</span>
+                                    </h3>
+                                    
+                                    <!-- Main Feature -->
+                                    <div class="bg-white/80 rounded-xl p-6 mb-4 shadow-lg">
+                                        <div class="flex items-center mb-4">
+                                            <i class="fas fa-chart-line text-purple-600 text-3xl mr-4"></i>
+                                            <div>
+                                                <h4 class="font-bold text-gray-900 text-lg">의료 기록 기반 건강 분석</h4>
+                                                <p class="text-sm text-gray-600">AI가 당신의 의료 기록을 분석하여 건강 상태를 실시간으로 모니터링합니다</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Feature Grid -->
+                                    <div class="grid md:grid-cols-3 gap-4 mb-4">
+                                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 border border-purple-200">
+                                            <div class="flex items-center mb-3">
+                                                <i class="fas fa-gauge-high text-purple-600 text-2xl mr-3"></i>
+                                                <h5 class="font-bold text-gray-900">종합 건강 점수</h5>
+                                            </div>
+                                            <p class="text-sm text-gray-700 mb-2">100점 만점 기준으로 현재 건강 상태를 한눈에 확인</p>
+                                            <div class="flex items-baseline">
+                                                <span class="text-3xl font-black gradient-text">75</span>
+                                                <span class="text-lg text-gray-500 ml-1">/100</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 border border-blue-200">
+                                            <div class="flex items-center mb-3">
+                                                <i class="fas fa-heart-pulse text-blue-600 text-2xl mr-3"></i>
+                                                <h5 class="font-bold text-gray-900">주요 건강 지표</h5>
+                                            </div>
+                                            <p class="text-sm text-gray-700 mb-2">혈압, 심박수, BMI 등 중요 지표 추적</p>
+                                            <div class="flex gap-2">
+                                                <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded text-xs font-bold">혈압</span>
+                                                <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded text-xs font-bold">심박수</span>
+                                                <span class="px-2 py-1 bg-blue-200 text-blue-800 rounded text-xs font-bold">BMI</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-4 border border-pink-200">
+                                            <div class="flex items-center mb-3">
+                                                <i class="fas fa-exclamation-triangle text-pink-600 text-2xl mr-3"></i>
+                                                <h5 class="font-bold text-gray-900">위험도 평가</h5>
+                                            </div>
+                                            <p class="text-sm text-gray-700 mb-2">당뇨, 고혈압, 심혈관 질환 위험도 분석</p>
+                                            <div class="flex gap-2">
+                                                <span class="px-2 py-1 bg-green-200 text-green-800 rounded text-xs font-bold">낮음</span>
+                                                <span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded text-xs font-bold">보통</span>
+                                                <span class="px-2 py-1 bg-red-200 text-red-800 rounded text-xs font-bold">높음</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Advanced Features -->
+                                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                        <div class="bg-white/80 rounded-xl p-4 border-l-4 border-purple-500">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-bullseye text-purple-600 text-2xl mr-3 mt-1"></i>
+                                                <div class="flex-1">
+                                                    <h5 class="font-bold text-gray-900 mb-2">건강 목표 관리</h5>
+                                                    <p class="text-sm text-gray-700">체중 감량, 혈압 조절 등 개인별 건강 목표 설정 및 진행도 추적</p>
+                                                    <div class="mt-2 h-2 bg-gray-200 rounded-full">
+                                                        <div class="h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" style="width: 60%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-white/80 rounded-xl p-4 border-l-4 border-orange-500">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-bell text-orange-600 text-2xl mr-3 mt-1"></i>
+                                                <div class="flex-1">
+                                                    <h5 class="font-bold text-gray-900 mb-2">스마트 건강 알림</h5>
+                                                    <p class="text-sm text-gray-700">이상 징후 감지 시 즉시 알림 및 권장 조치 안내</p>
+                                                    <div class="mt-2 flex gap-2">
+                                                        <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">
+                                                            <i class="fas fa-exclamation-circle mr-1"></i>긴급
+                                                        </span>
+                                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold">
+                                                            <i class="fas fa-triangle-exclamation mr-1"></i>주의
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Health Trends -->
+                                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div>
+                                                <h5 class="font-bold text-lg mb-1"><i class="fas fa-chart-area mr-2"></i>건강 추이 분석</h5>
+                                                <p class="text-sm opacity-90">시간에 따른 건강 지표 변화를 그래프로 시각화</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-3xl font-black">📊</div>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-3 gap-4 text-center">
+                                            <div class="bg-white/20 rounded-lg p-3">
+                                                <div class="text-2xl font-bold">7일</div>
+                                                <div class="text-xs opacity-90">최근 추이</div>
+                                            </div>
+                                            <div class="bg-white/20 rounded-lg p-3">
+                                                <div class="text-2xl font-bold">30일</div>
+                                                <div class="text-xs opacity-90">월간 분석</div>
+                                            </div>
+                                            <div class="bg-white/20 rounded-lg p-3">
+                                                <div class="text-2xl font-bold">1년</div>
+                                                <div class="text-xs opacity-90">연간 비교</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Benefits -->
+                                    <div class="mt-4 bg-white/60 rounded-xl p-4">
+                                        <div class="grid md:grid-cols-2 gap-4">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-check-circle text-green-600 text-xl mr-3 mt-1"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">예방적 건강 관리</p>
+                                                    <p class="text-sm text-gray-600">질병 발생 전 조기 발견 및 예방</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-start">
+                                                <i class="fas fa-check-circle text-green-600 text-xl mr-3 mt-1"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">맞춤형 건강 권장사항</p>
+                                                    <p class="text-sm text-gray-600">개인별 건강 상태에 맞는 조언 제공</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Summary Box -->
@@ -1454,8 +1810,8 @@ app.get('/', (c) => {
                                 <p class="text-gray-700">사용자 요청</p>
                             </div>
                             <div class="text-center">
-                                <div class="text-4xl font-black text-pink-600 mb-2">8단계</div>
-                                <p class="text-gray-700">자동 처리</p>
+                                <div class="text-4xl font-black text-pink-600 mb-2">9단계</div>
+                                <p class="text-gray-700">자동 처리 + 건강 분석</p>
                             </div>
                             <div class="text-center">
                                 <div class="text-4xl font-black text-blue-600 mb-2">0회</div>
@@ -3193,6 +3549,22 @@ app.get('/dashboard', (c) => {
                 <div class="glass-card rounded-2xl p-6 card-hover border-gradient">
                     <div class="flex items-center justify-between">
                         <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">건강 점수</p>
+                            <p class="text-4xl font-black gradient-text" id="healthScoreCount">--</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-pink-500 to-rose-600 p-4 rounded-2xl shadow-lg">
+                            <i class="fas fa-heartbeat text-white text-3xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="text-pink-600 font-semibold" id="healthLevelSummary"><i class="fas fa-check mr-1"></i>--</span>
+                        <span class="text-gray-500 ml-2">상태</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 card-hover border-gradient">
+                    <div class="flex items-center justify-between">
+                        <div>
                             <p class="text-gray-600 text-sm font-semibold mb-2">등록 병원</p>
                             <p class="text-4xl font-black gradient-text" id="hospitalsCount">0</p>
                         </div>
@@ -3213,6 +3585,9 @@ app.get('/dashboard', (c) => {
                     <nav class="flex overflow-x-auto">
                         <button class="tab-btn px-8 py-5 font-bold text-purple-600 border-b-4 border-purple-600 bg-white/50" data-tab="appointments">
                             <i class="fas fa-calendar-alt mr-2"></i>예약 관리
+                        </button>
+                        <button class="tab-btn px-8 py-5 font-bold text-gray-600 hover:text-purple-600 hover:bg-white/30 transition" data-tab="health">
+                            <i class="fas fa-heartbeat mr-2"></i>건강상태
                         </button>
                         <button class="tab-btn px-8 py-5 font-bold text-gray-600 hover:text-purple-600 hover:bg-white/30 transition" data-tab="records">
                             <i class="fas fa-file-medical-alt mr-2"></i>의료 기록
@@ -3242,6 +3617,88 @@ app.get('/dashboard', (c) => {
                             </button>
                         </div>
                         <div id="appointmentsList"></div>
+                    </div>
+
+                    <!-- Health Status Tab -->
+                    <div id="tab-health" class="tab-content hidden">
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-black gradient-text mb-2">나의 건강상태</h2>
+                            <p class="text-gray-600">의료 기록을 기반으로 한 건강 분석</p>
+                        </div>
+
+                        <!-- Health Score Card -->
+                        <div id="healthScoreCard" class="glass-card rounded-2xl p-8 mb-8 bg-gradient-to-br from-blue-50 to-purple-50">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2">종합 건강 점수</h3>
+                                    <div class="flex items-baseline gap-4">
+                                        <div class="text-6xl font-black gradient-text" id="overallScore">--</div>
+                                        <div class="text-2xl text-gray-500">/100</div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <span id="healthLevelBadge" class="px-4 py-2 rounded-full text-sm font-bold"></span>
+                                    </div>
+                                </div>
+                                <div class="w-32 h-32 relative">
+                                    <svg class="transform -rotate-90 w-32 h-32">
+                                        <circle cx="64" cy="64" r="56" stroke="#e5e7eb" stroke-width="8" fill="none"></circle>
+                                        <circle id="scoreCircle" cx="64" cy="64" r="56" stroke="url(#gradient)" stroke-width="8" fill="none" 
+                                                stroke-dasharray="351.86" stroke-dashoffset="351.86" stroke-linecap="round"></circle>
+                                        <defs>
+                                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                                                <stop offset="100%" style="stop-color:#EC4899;stop-opacity:1" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Health Summary -->
+                        <div id="healthSummaryCard" class="glass-card rounded-2xl p-6 mb-8"></div>
+
+                        <!-- Vital Signs Grid -->
+                        <div class="mb-8">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-heartbeat text-red-500 mr-2"></i>주요 건강 지표</h3>
+                            <div class="grid md:grid-cols-3 gap-6" id="vitalSignsGrid"></div>
+                        </div>
+
+                        <!-- Risk Assessment -->
+                        <div class="mb-8">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>건강 위험 평가</h3>
+                            <div class="grid md:grid-cols-3 gap-6" id="riskAssessmentGrid"></div>
+                        </div>
+
+                        <!-- Health Alerts -->
+                        <div class="mb-8" id="healthAlertsSection">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-bell text-orange-500 mr-2"></i>건강 알림</h3>
+                            <div id="healthAlertsList"></div>
+                        </div>
+
+                        <!-- Health Goals -->
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xl font-bold text-gray-800"><i class="fas fa-bullseye text-green-500 mr-2"></i>건강 목표</h3>
+                                <button id="newGoalBtn" class="btn-primary text-white px-4 py-2 rounded-lg font-bold text-sm">
+                                    <i class="fas fa-plus mr-1"></i>새 목표
+                                </button>
+                            </div>
+                            <div id="healthGoalsList" class="space-y-4"></div>
+                        </div>
+
+                        <!-- Health Trends Chart -->
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-chart-line text-blue-500 mr-2"></i>건강 추이</h3>
+                            <div class="mb-4">
+                                <select id="trendMetricSelect" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="weight">체중</option>
+                                    <option value="blood_pressure_systolic">수축기 혈압</option>
+                                    <option value="heart_rate">심박수</option>
+                                </select>
+                            </div>
+                            <div id="healthTrendsChart" class="h-64"></div>
+                        </div>
                     </div>
 
                     <!-- Medical Records Tab -->

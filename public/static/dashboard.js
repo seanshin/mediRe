@@ -22,6 +22,10 @@ let insurancePolicies = [];
 let insuranceClaims = [];
 let insuranceReceipts = [];
 let insuranceStats = {};
+let healthStatus = null;
+let healthTrends = [];
+let healthGoals = [];
+let healthAlerts = [];
 let chatSessionId = null;
 
 // Initialize dashboard
@@ -91,6 +95,17 @@ async function loadData() {
     const statsResponse = await axios.get(`${API_BASE}/users/${CURRENT_USER_ID}/insurance/statistics`);
     insuranceStats = statsResponse.data.data || {};
 
+    // Load health data
+    const healthResponse = await axios.get(`${API_BASE}/users/${CURRENT_USER_ID}/health/status`);
+    healthStatus = healthResponse.data.data || null;
+
+    const goalsResponse = await axios.get(`${API_BASE}/users/${CURRENT_USER_ID}/health/goals?status=active`);
+    healthGoals = goalsResponse.data.data || [];
+
+    const alertsResponse = await axios.get(`${API_BASE}/users/${CURRENT_USER_ID}/health/alerts?unresolved=true`);
+    healthAlerts = alertsResponse.data.data || [];
+
+    updateSummaryCards();
     renderCurrentTab();
   } catch (error) {
     console.error('데이터 로드 실패:', error);
@@ -105,6 +120,20 @@ function updateSummaryCards() {
   document.getElementById('prescriptionsCount').textContent = prescriptions.length;
   document.getElementById('hospitalsCount').textContent = hospitals.length;
   document.getElementById('insuranceClaimsCount').textContent = insuranceStats.pending_claims || 0;
+  
+  // Update health score
+  if (healthStatus) {
+    document.getElementById('healthScoreCount').textContent = healthStatus.overall_score;
+    const levelMap = {
+      'excellent': '최상',
+      'good': '양호',
+      'fair': '보통',
+      'poor': '주의',
+      'critical': '위험'
+    };
+    document.getElementById('healthLevelSummary').innerHTML = 
+      `<i class="fas fa-check mr-1"></i>${levelMap[healthStatus.health_level] || '--'}`;
+  }
   
   // Update insurance summary
   if (document.getElementById('insurancePoliciesCount')) {
@@ -187,6 +216,9 @@ function renderCurrentTab() {
   switch (currentTab) {
     case 'appointments':
       renderAppointments();
+      break;
+    case 'health':
+      renderHealthStatus();
       break;
     case 'records':
       renderMedicalRecords();
@@ -855,3 +887,288 @@ async function createClaimFromReceipt(receiptId) {
 // Make insurance functions globally accessible
 window.submitClaim = submitClaim;
 window.createClaimFromReceipt = createClaimFromReceipt;
+
+// ==================== Health Status Functions ====================
+
+// Render health status tab
+function renderHealthStatus() {
+  if (!healthStatus) {
+    document.getElementById('healthScoreCard').innerHTML = `
+      <div class="text-center py-8">
+        <p class="text-gray-500">건강 데이터가 없습니다.</p>
+        <p class="text-sm text-gray-400 mt-2">의료 기록이 쌓이면 자동으로 건강 분석이 제공됩니다.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Update health score circle
+  const score = healthStatus.overall_score;
+  document.getElementById('overallScore').textContent = score;
+  
+  const circle = document.getElementById('scoreCircle');
+  const circumference = 351.86;
+  const offset = circumference - (score / 100) * circumference;
+  circle.style.strokeDashoffset = offset;
+
+  // Update health level badge
+  const levelMap = {
+    'excellent': { text: '최상', color: 'bg-green-100 text-green-800', icon: 'fa-smile-beam' },
+    'good': { text: '양호', color: 'bg-blue-100 text-blue-800', icon: 'fa-smile' },
+    'fair': { text: '보통', color: 'bg-yellow-100 text-yellow-800', icon: 'fa-meh' },
+    'poor': { text: '주의', color: 'bg-orange-100 text-orange-800', icon: 'fa-frown' },
+    'critical': { text: '위험', color: 'bg-red-100 text-red-800', icon: 'fa-dizzy' }
+  };
+  
+  const levelInfo = levelMap[healthStatus.health_level] || levelMap['fair'];
+  document.getElementById('healthLevelBadge').innerHTML = `
+    <i class="fas ${levelInfo.icon} mr-2"></i>${levelInfo.text}
+  `;
+  document.getElementById('healthLevelBadge').className = 
+    `px-4 py-2 rounded-full text-sm font-bold ${levelInfo.color}`;
+
+  // Health summary
+  const summaryCard = document.getElementById('healthSummaryCard');
+  summaryCard.innerHTML = `
+    <div class="mb-4">
+      <h4 class="font-bold text-gray-800 mb-2"><i class="fas fa-clipboard-check text-purple-500 mr-2"></i>건강 요약</h4>
+      <p class="text-gray-700">${healthStatus.health_summary || '데이터 없음'}</p>
+    </div>
+    ${healthStatus.recommendations ? `
+      <div class="mb-4">
+        <h4 class="font-bold text-gray-800 mb-2"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>권장 사항</h4>
+        <p class="text-gray-700">${healthStatus.recommendations}</p>
+      </div>
+    ` : ''}
+    ${healthStatus.alerts ? `
+      <div class="p-4 bg-orange-50 border-l-4 border-orange-500 rounded">
+        <p class="font-semibold text-orange-800"><i class="fas fa-exclamation-triangle mr-2"></i>주의사항</p>
+        <p class="text-orange-700 mt-1">${healthStatus.alerts}</p>
+      </div>
+    ` : ''}
+  `;
+
+  // Vital signs
+  renderVitalSigns();
+  
+  // Risk assessment
+  renderRiskAssessment();
+  
+  // Health alerts
+  renderHealthAlerts();
+  
+  // Health goals
+  renderHealthGoals();
+}
+
+// Render vital signs
+function renderVitalSigns() {
+  const container = document.getElementById('vitalSignsGrid');
+  
+  const vitals = [
+    {
+      label: '혈압',
+      value: healthStatus.blood_pressure_systolic && healthStatus.blood_pressure_diastolic
+        ? `${healthStatus.blood_pressure_systolic}/${healthStatus.blood_pressure_diastolic}`
+        : '--',
+      unit: 'mmHg',
+      icon: 'fa-heart-pulse',
+      color: 'text-red-500',
+      status: healthStatus.blood_pressure_systolic > 130 ? 'high' : 'normal'
+    },
+    {
+      label: '심박수',
+      value: healthStatus.heart_rate || '--',
+      unit: 'bpm',
+      icon: 'fa-heartbeat',
+      color: 'text-pink-500',
+      status: 'normal'
+    },
+    {
+      label: '체온',
+      value: healthStatus.body_temperature || '--',
+      unit: '°C',
+      icon: 'fa-temperature-half',
+      color: 'text-blue-500',
+      status: 'normal'
+    },
+    {
+      label: '체중',
+      value: healthStatus.weight || '--',
+      unit: 'kg',
+      icon: 'fa-weight-scale',
+      color: 'text-green-500',
+      status: 'normal'
+    },
+    {
+      label: 'BMI',
+      value: healthStatus.bmi ? healthStatus.bmi.toFixed(1) : '--',
+      unit: '',
+      icon: 'fa-chart-line',
+      color: 'text-purple-500',
+      status: healthStatus.bmi > 25 ? 'high' : 'normal'
+    },
+    {
+      label: '활성 약물',
+      value: healthStatus.active_medications_count || 0,
+      unit: '개',
+      icon: 'fa-pills',
+      color: 'text-indigo-500',
+      status: 'normal'
+    }
+  ];
+
+  container.innerHTML = vitals.map(vital => `
+    <div class="glass-card rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center">
+          <i class="fas ${vital.icon} ${vital.color} text-2xl mr-3"></i>
+          <span class="font-semibold text-gray-700">${vital.label}</span>
+        </div>
+        ${vital.status === 'high' ? '<span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">주의</span>' : ''}
+      </div>
+      <div class="flex items-baseline">
+        <span class="text-3xl font-bold gradient-text">${vital.value}</span>
+        <span class="text-sm text-gray-500 ml-2">${vital.unit}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Render risk assessment
+function renderRiskAssessment() {
+  const container = document.getElementById('riskAssessmentGrid');
+  
+  const riskMap = {
+    'low': { text: '낮음', color: 'bg-green-100 text-green-800', icon: 'fa-check-circle' },
+    'medium': { text: '보통', color: 'bg-yellow-100 text-yellow-800', icon: 'fa-exclamation-circle' },
+    'high': { text: '높음', color: 'bg-red-100 text-red-800', icon: 'fa-exclamation-triangle' },
+    'diagnosed': { text: '진단됨', color: 'bg-purple-100 text-purple-800', icon: 'fa-notes-medical' }
+  };
+
+  const risks = [
+    {
+      label: '당뇨병',
+      level: healthStatus.diabetes_risk || 'low',
+      icon: 'fa-droplet'
+    },
+    {
+      label: '고혈압',
+      level: healthStatus.hypertension_risk || 'low',
+      icon: 'fa-heart-pulse'
+    },
+    {
+      label: '심혈관',
+      level: healthStatus.cardiovascular_risk || 'low',
+      icon: 'fa-heart'
+    }
+  ];
+
+  container.innerHTML = risks.map(risk => {
+    const riskInfo = riskMap[risk.level];
+    return `
+      <div class="glass-card rounded-xl p-4">
+        <div class="flex items-center mb-3">
+          <i class="fas ${risk.icon} text-2xl text-purple-500 mr-3"></i>
+          <span class="font-semibold text-gray-700">${risk.label} 위험도</span>
+        </div>
+        <span class="inline-block px-3 py-1 rounded-full text-sm font-bold ${riskInfo.color}">
+          <i class="fas ${riskInfo.icon} mr-1"></i>${riskInfo.text}
+        </span>
+      </div>
+    `;
+  }).join('');
+}
+
+// Render health alerts
+function renderHealthAlerts() {
+  const container = document.getElementById('healthAlertsList');
+  
+  if (!healthAlerts || healthAlerts.length === 0) {
+    document.getElementById('healthAlertsSection').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('healthAlertsSection').style.display = 'block';
+
+  const alertTypeMap = {
+    'critical': { icon: 'fa-circle-exclamation', color: 'border-red-500 bg-red-50' },
+    'warning': { icon: 'fa-triangle-exclamation', color: 'border-yellow-500 bg-yellow-50' },
+    'info': { icon: 'fa-circle-info', color: 'border-blue-500 bg-blue-50' },
+    'reminder': { icon: 'fa-bell', color: 'border-purple-500 bg-purple-50' }
+  };
+
+  container.innerHTML = healthAlerts.map(alert => {
+    const alertInfo = alertTypeMap[alert.alert_type] || alertTypeMap['info'];
+    return `
+      <div class="border-l-4 ${alertInfo.color} p-4 rounded mb-3">
+        <div class="flex items-start">
+          <i class="fas ${alertInfo.icon} text-2xl mr-3 mt-1"></i>
+          <div class="flex-1">
+            <h4 class="font-bold text-gray-800">${alert.title}</h4>
+            <p class="text-gray-700 mt-1">${alert.message}</p>
+            ${alert.action_required ? `
+              <p class="text-sm text-gray-600 mt-2">
+                <i class="fas fa-hand-point-right mr-1"></i><strong>조치 필요:</strong> ${alert.action_required}
+              </p>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Render health goals
+function renderHealthGoals() {
+  const container = document.getElementById('healthGoalsList');
+  
+  if (!healthGoals || healthGoals.length === 0) {
+    container.innerHTML = '<p class="text-gray-500 text-center py-4">설정된 건강 목표가 없습니다.</p>';
+    return;
+  }
+
+  const goalTypeMap = {
+    'weight': { icon: 'fa-weight-scale', color: 'text-green-500' },
+    'blood_pressure': { icon: 'fa-heart-pulse', color: 'text-red-500' },
+    'exercise': { icon: 'fa-running', color: 'text-blue-500' },
+    'medication_adherence': { icon: 'fa-pills', color: 'text-purple-500' },
+    'diet': { icon: 'fa-apple-alt', color: 'text-orange-500' },
+    'sleep': { icon: 'fa-bed', color: 'text-indigo-500' },
+    'custom': { icon: 'fa-bullseye', color: 'text-pink-500' }
+  };
+
+  container.innerHTML = healthGoals.map(goal => {
+    const goalInfo = goalTypeMap[goal.goal_type] || goalTypeMap['custom'];
+    const progress = goal.progress_percentage || 0;
+    
+    return `
+      <div class="glass-card rounded-xl p-5">
+        <div class="flex items-start justify-between mb-3">
+          <div class="flex items-center">
+            <i class="fas ${goalInfo.icon} ${goalInfo.color} text-2xl mr-3"></i>
+            <div>
+              <h4 class="font-bold text-gray-800">${goal.goal_title}</h4>
+              <p class="text-sm text-gray-600">${goal.goal_description || ''}</p>
+            </div>
+          </div>
+          <span class="text-2xl font-bold gradient-text">${progress}%</span>
+        </div>
+        
+        <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+          <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full transition-all duration-500" 
+               style="width: ${progress}%"></div>
+        </div>
+        
+        <div class="flex justify-between text-sm text-gray-600">
+          <span><i class="fas fa-flag mr-1"></i>현재: ${goal.current_value || '--'}</span>
+          <span><i class="fas fa-bullseye mr-1"></i>목표: ${goal.target_value}</span>
+          ${goal.target_date ? `<span><i class="fas fa-calendar mr-1"></i>${goal.target_date}</span>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Make health functions globally accessible
+window.renderHealthStatus = renderHealthStatus;
