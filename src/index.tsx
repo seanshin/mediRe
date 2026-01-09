@@ -841,76 +841,188 @@ app.get('/', (c) => {
 
                     <!-- Use Case Scenarios -->
                     <div class="max-w-6xl mx-auto mt-20">
-                        <div class="grid md:grid-cols-3 gap-8 mb-12">
+                        <!-- Main Scenarios -->
+                        <div class="grid md:grid-cols-3 gap-6 mb-8">
                             <!-- Scenario 1 -->
-                            <div class="glass-card-dark p-8 rounded-2xl card-hover fade-in-delay-3">
-                                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                                    <i class="fas fa-comments text-white text-3xl"></i>
+                            <div class="glass-card-dark p-6 rounded-2xl card-hover fade-in-delay-3">
+                                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-comments text-white text-2xl"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-white mb-4 text-center">간편한 대화형 예약</h3>
-                                <p class="text-white/80 text-center leading-relaxed mb-4">
-                                    "내일 오후에 내과 예약 가능해?"
-                                </p>
-                                <p class="text-white/60 text-sm text-center">
-                                    → AI가 즉시 가능한 시간과 의사를 추천해드립니다
+                                <h3 class="text-lg font-bold text-white mb-3 text-center">간편한 대화형 예약</h3>
+                                <div class="bg-white/10 rounded-xl p-4 mb-3">
+                                    <p class="text-white/90 text-sm text-center italic">
+                                        "내일 오후에 내과 예약 가능해?"
+                                    </p>
+                                </div>
+                                <p class="text-white/70 text-sm text-center leading-relaxed">
+                                    AI가 즉시 가능한 시간과 의사를 추천해드립니다
                                 </p>
                             </div>
 
                             <!-- Scenario 2 -->
-                            <div class="glass-card-dark p-8 rounded-2xl card-hover fade-in-delay-3" style="animation-delay: 0.8s">
-                                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                                    <i class="fas fa-notes-medical text-white text-3xl"></i>
+                            <div class="glass-card-dark p-6 rounded-2xl card-hover fade-in-delay-3" style="animation-delay: 0.2s">
+                                <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-notes-medical text-white text-2xl"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-white mb-4 text-center">스마트 증상 분석</h3>
-                                <p class="text-white/80 text-center leading-relaxed mb-4">
-                                    "머리가 아프고 열이 나요"
-                                </p>
-                                <p class="text-white/60 text-sm text-center">
-                                    → AI가 증상을 분석하여 적합한 진료과를 추천합니다
+                                <h3 class="text-lg font-bold text-white mb-3 text-center">스마트 증상 분석</h3>
+                                <div class="bg-white/10 rounded-xl p-4 mb-3">
+                                    <p class="text-white/90 text-sm text-center italic">
+                                        "머리가 아프고 열이 나요"
+                                    </p>
+                                </div>
+                                <p class="text-white/70 text-sm text-center leading-relaxed">
+                                    AI가 증상을 분석하여 적합한 진료과를 추천합니다
                                 </p>
                             </div>
 
                             <!-- Scenario 3 -->
-                            <div class="glass-card-dark p-8 rounded-2xl card-hover fade-in-delay-3" style="animation-delay: 1s">
-                                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 mx-auto">
-                                    <i class="fas fa-history text-white text-3xl"></i>
+                            <div class="glass-card-dark p-6 rounded-2xl card-hover fade-in-delay-3" style="animation-delay: 0.4s">
+                                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-history text-white text-2xl"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-white mb-4 text-center">통합 건강 관리</h3>
-                                <p class="text-white/80 text-center leading-relaxed mb-4">
-                                    "지난 진료 기록 보여줘"
-                                </p>
-                                <p class="text-white/60 text-sm text-center">
-                                    → 모든 병원의 진료 기록을 한 곳에서 확인 가능
+                                <h3 class="text-lg font-bold text-white mb-3 text-center">통합 건강 관리</h3>
+                                <div class="bg-white/10 rounded-xl p-4 mb-3">
+                                    <p class="text-white/90 text-sm text-center italic">
+                                        "지난 진료 기록 보여줘"
+                                    </p>
+                                </div>
+                                <p class="text-white/70 text-sm text-center leading-relaxed">
+                                    모든 병원의 진료 기록을 한 곳에서 확인 가능
                                 </p>
                             </div>
                         </div>
 
-                        <!-- Marketing Message -->
-                        <div class="glass-card-dark p-10 rounded-3xl text-center fade-in-delay-3" style="animation-delay: 1.2s">
-                            <div class="flex items-center justify-center gap-4 mb-6">
-                                <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                                <span class="text-white font-bold text-lg">지금 이 순간에도</span>
-                                <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
+                        <!-- Additional Scenarios -->
+                        <div class="grid md:grid-cols-3 gap-6 mb-8">
+                            <!-- Scenario 4 -->
+                            <div class="glass-card-dark p-6 rounded-2xl card-hover fade-in-delay-3" style="animation-delay: 0.6s">
+                                <div class="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-bell text-white text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-bold text-white mb-3 text-center">예약 알림 서비스</h3>
+                                <div class="bg-white/10 rounded-xl p-4 mb-3">
+                                    <p class="text-white/90 text-sm text-center italic">
+                                        "내일 진료 시간 알려줘"
+                                    </p>
+                                </div>
+                                <p class="text-white/70 text-sm text-center leading-relaxed">
+                                    SMS와 앱 푸시로 예약 시간을 미리 알려드립니다
+                                </p>
                             </div>
-                            <p class="text-3xl md:text-4xl font-black text-white mb-4">
-                                <span class="text-green-300">1,234명</span>의 사용자가
-                            </p>
-                            <p class="text-2xl md:text-3xl font-bold text-white/90 mb-6">
-                                메디케어 AI로 병원 예약 중
-                            </p>
-                            <div class="flex flex-wrap justify-center gap-6 text-white/70 text-sm">
-                                <div class="flex items-center gap-2">
-                                    <i class="fas fa-clock text-green-300"></i>
-                                    <span>평균 예약 시간: <strong class="text-white">2분 30초</strong></span>
+
+                            <!-- Scenario 5 -->
+                            <div class="glass-card-dark p-6 rounded-2xl card-hover fade-in-delay-3" style="animation-delay: 0.8s">
+                                <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-pills text-white text-2xl"></i>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <i class="fas fa-star text-yellow-300"></i>
-                                    <span>고객 만족도: <strong class="text-white">98.5%</strong></span>
+                                <h3 class="text-lg font-bold text-white mb-3 text-center">처방전 자동 관리</h3>
+                                <div class="bg-white/10 rounded-xl p-4 mb-3">
+                                    <p class="text-white/90 text-sm text-center italic">
+                                        "약 복용 시간이에요"
+                                    </p>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <i class="fas fa-shield-alt text-blue-300"></i>
-                                    <span>보안 등급: <strong class="text-white">AAA</strong></span>
+                                <p class="text-white/70 text-sm text-center leading-relaxed">
+                                    처방받은 약의 복용 시간을 정확하게 알려드립니다
+                                </p>
+                            </div>
+
+                            <!-- Scenario 6 -->
+                            <div class="glass-card-dark p-6 rounded-2xl card-hover fade-in-delay-3" style="animation-delay: 1s">
+                                <div class="w-14 h-14 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+                                    <i class="fas fa-user-md text-white text-2xl"></i>
                                 </div>
+                                <h3 class="text-lg font-bold text-white mb-3 text-center">맞춤 의사 추천</h3>
+                                <div class="bg-white/10 rounded-xl p-4 mb-3">
+                                    <p class="text-white/90 text-sm text-center italic">
+                                        "허리 통증 전문의 찾아줘"
+                                    </p>
+                                </div>
+                                <p class="text-white/70 text-sm text-center leading-relaxed">
+                                    증상과 위치에 맞는 최적의 전문의를 찾아드립니다
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Marketing Message & Stats -->
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <!-- Live Activity Box -->
+                            <div class="glass-card-dark p-8 rounded-3xl fade-in-delay-3" style="animation-delay: 1.2s">
+                                <div class="flex items-center justify-center gap-4 mb-6">
+                                    <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                    <span class="text-white font-bold text-lg">지금 이 순간에도</span>
+                                    <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse" style="animation-delay: 0.5s"></div>
+                                </div>
+                                <p class="text-3xl md:text-4xl font-black text-white mb-3 text-center">
+                                    <span class="text-green-300">1,234명</span>의 사용자가
+                                </p>
+                                <p class="text-xl md:text-2xl font-bold text-white/90 mb-6 text-center">
+                                    메디케어 AI로 병원 예약 중
+                                </p>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-white/10 rounded-xl p-3 text-center">
+                                        <p class="text-2xl font-black text-green-300">423</p>
+                                        <p class="text-white/70 text-xs">오늘 예약 완료</p>
+                                    </div>
+                                    <div class="bg-white/10 rounded-xl p-3 text-center">
+                                        <p class="text-2xl font-black text-blue-300">89</p>
+                                        <p class="text-white/70 text-xs">현재 상담 중</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance Stats Box -->
+                            <div class="glass-card-dark p-8 rounded-3xl fade-in-delay-3" style="animation-delay: 1.4s">
+                                <h3 class="text-2xl font-black text-white mb-6 text-center">
+                                    <i class="fas fa-chart-line text-yellow-300 mr-2"></i>
+                                    검증된 성능
+                                </h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between bg-white/10 rounded-xl p-4">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-clock text-green-300 text-xl"></i>
+                                            <span class="text-white font-semibold">평균 예약 시간</span>
+                                        </div>
+                                        <span class="text-2xl font-black text-green-300">2분 30초</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-white/10 rounded-xl p-4">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-star text-yellow-300 text-xl"></i>
+                                            <span class="text-white font-semibold">고객 만족도</span>
+                                        </div>
+                                        <span class="text-2xl font-black text-yellow-300">98.5%</span>
+                                    </div>
+                                    <div class="flex items-center justify-between bg-white/10 rounded-xl p-4">
+                                        <div class="flex items-center gap-3">
+                                            <i class="fas fa-shield-alt text-blue-300 text-xl"></i>
+                                            <span class="text-white font-semibold">보안 등급</span>
+                                        </div>
+                                        <span class="text-2xl font-black text-blue-300">AAA</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key Benefits Grid -->
+                        <div class="grid md:grid-cols-4 gap-4">
+                            <div class="glass-card-dark p-6 rounded-2xl text-center fade-in-delay-3" style="animation-delay: 1.6s">
+                                <div class="text-4xl font-black text-white mb-2">50K+</div>
+                                <div class="text-white/70 text-sm font-semibold">누적 예약 건수</div>
+                                <div class="text-green-300 text-xs mt-2">↑ 전월 대비 23%</div>
+                            </div>
+                            <div class="glass-card-dark p-6 rounded-2xl text-center fade-in-delay-3" style="animation-delay: 1.7s">
+                                <div class="text-4xl font-black text-white mb-2">3,000+</div>
+                                <div class="text-white/70 text-sm font-semibold">제휴 병원</div>
+                                <div class="text-blue-300 text-xs mt-2">전국 네트워크</div>
+                            </div>
+                            <div class="glass-card-dark p-6 rounded-2xl text-center fade-in-delay-3" style="animation-delay: 1.8s">
+                                <div class="text-4xl font-black text-white mb-2">24/7</div>
+                                <div class="text-white/70 text-sm font-semibold">AI 상담 가능</div>
+                                <div class="text-purple-300 text-xs mt-2">연중무휴</div>
+                            </div>
+                            <div class="glass-card-dark p-6 rounded-2xl text-center fade-in-delay-3" style="animation-delay: 1.9s">
+                                <div class="text-4xl font-black text-white mb-2">5초</div>
+                                <div class="text-white/70 text-sm font-semibold">평균 응답 시간</div>
+                                <div class="text-yellow-300 text-xs mt-2">초고속 처리</div>
                             </div>
                         </div>
                     </div>
